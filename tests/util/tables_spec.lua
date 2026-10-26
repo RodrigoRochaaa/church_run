@@ -18,6 +18,14 @@ describe("Tables (SPEC-002 R5, R10)", function()
         assert.are.equal(1, target.new.x)
     end)
 
+    it("isEmpty diz se a tabela não tem nenhuma chave, sem usar next", function()
+        local savedNext = next
+        rawset(_G, "next", nil)
+        local results = { Tables.isEmpty({}), Tables.isEmpty({ a = 1 }), Tables.isEmpty({ 1 }) }
+        rawset(_G, "next", savedNext)
+        assert.are.same({ true, false, false }, results)
+    end)
+
     it("isPlainData aceita texto, número, booleano e tabelas desses tipos", function()
         assert.is_true(Tables.isPlainData({ a = "x", b = 1, c = true, d = { 1, 2, { e = "f" } } }))
     end)

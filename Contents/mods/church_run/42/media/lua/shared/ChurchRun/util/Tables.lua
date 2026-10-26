@@ -4,6 +4,14 @@ local Tables = {}
 
 local PLAIN_TYPES = { string = true, number = true, boolean = true }
 
+-- O Kahlua do B42 não tem next (CLAUDE.md §6.2), então a tabela vazia é conferida com pairs.
+function Tables.isEmpty(tbl)
+    for _ in pairs(tbl) do
+        return false
+    end
+    return true
+end
+
 function Tables.deepCopy(value)
     if type(value) ~= "table" then
         return value

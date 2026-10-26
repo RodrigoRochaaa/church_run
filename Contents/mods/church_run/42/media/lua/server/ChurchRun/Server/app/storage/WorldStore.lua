@@ -54,7 +54,7 @@ end
 
 function WorldStore:prepare(live)
     local current = self.migrations.CURRENT
-    if next(live) == nil then
+    if Tables.isEmpty(live) then
         Tables.replaceContents(live, self.migrations.initial(self.clock.nowMs()))
         self.log.info("storage.created", { key = WorldStore.KEY, schemaVersion = current })
         return true

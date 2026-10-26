@@ -118,6 +118,17 @@ describe("WorldStore (SPEC-002)", function()
         assert.are.equal("invalidMigrations", t.log.all("storage.safeMode")[1].fields.reason)
     end)
 
+    it("cria os dados sem next, que o Kahlua não tem (regressão do teste no servidor real)", function()
+        local t = newStore()
+        local savedNext = next
+        rawset(_G, "next", nil)
+        local ok, loaded = pcall(t.store.load, t.store)
+        rawset(_G, "next", savedNext)
+        assert.is_true(ok, tostring(loaded))
+        assert.is_true(loaded)
+        assert.are.equal(1, t.storage.tables[KEY].bootCount)
+    end)
+
     it("antes da carga, os dados não estão prontos (R6)", function()
         assert.is_false(newStore().store:isReady())
     end)
