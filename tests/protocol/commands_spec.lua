@@ -46,6 +46,20 @@ describe("Commands (SPEC-001 R2)", function()
         assert.is_false(Commands.check({ hello = clientCommand({ name = { type = "string" } }) }))
     end)
 
+    it("o ping funciona sem os dados carregados (SPEC-002 R6)", function()
+        assert.is_false(Commands.catalog.ping.requiresData)
+    end)
+
+    it("recusa requiresData que não é booleano", function()
+        local def = {
+            direction = Commands.TO_SERVER,
+            rateLimit = { burst = 1, perSecond = 1 },
+            schema = {},
+            requiresData = "nao",
+        }
+        assert.is_false(Commands.check({ hello = def }))
+    end)
+
     it("lookup só acha nomes de texto que estão no catálogo", function()
         assert.is_nil(Commands.lookup(Commands.catalog, 42))
         assert.is_nil(Commands.lookup(Commands.catalog, "naoExiste"))

@@ -181,6 +181,41 @@ describe("Router (SPEC-001)", function()
         assert.are.equal(1, t.router.limiter:count())
     end)
 
+    it("com os dados indisponíveis, só o ping é atendido (SPEC-002 R6, CA5)", function()
+        local catalog = {
+            ping = Commands.catalog.ping,
+            buy = {
+                direction = Commands.TO_SERVER,
+                rateLimit = { burst = 3, perSecond = 1 },
+                schema = { item = { type = "string", maxLen = 8 } },
+            },
+        }
+        local bought = 0
+        local net = Fakes.net()
+        local router = Router.new({
+            catalog = catalog,
+            clock = Fakes.clock(0),
+            log = Fakes.log(),
+            net = net,
+            players = Fakes.players(),
+            dataReady = function()
+                return false
+            end,
+            handlers = {
+                ping = Ping.handle,
+                buy = function()
+                    bought = bought + 1
+                end,
+            },
+        })
+        router:handle(MODULE, "buy", ana, { pv = PV, item = "x" })
+        router:handle(MODULE, "ping", ana, { pv = PV, nonce = 1 })
+        assert.are.equal(0, bought)
+        local expected = { command = "buy", reason = Commands.REASON_SERVER_DATA_UNAVAILABLE }
+        assert.are.same({ player = ana, command = "rejected", args = expected }, net.sent[1])
+        assert.are.same({ player = ana, command = "pong", args = { nonce = 1 } }, net.sent[2])
+    end)
+
     it("usa um nome padrão quando o jogo não informa o username", function()
         local t = newRouter()
         t.router:handle(MODULE, "ping", Fakes.player(nil), { pv = PV, nonce = 1 })
