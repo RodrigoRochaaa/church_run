@@ -4,61 +4,53 @@
 > O histórico completo fica no Git: `git log -p -- JOURNAL.md`. Por isso, ao fim da sessão, o journal novo é commitado.
 
 **Data:** 26/10/2026
-**Sessão:** P02: SPEC-001 e SPEC-002 aprovadas e implementadas, com a autonomia dada pelo Rodrigo
-**Fase atual:** Fase 0 (Fundação), em andamento. No `ROADMAP.md`: P00 aguardando teste, P01 concluído, P02 aguardando teste (PRs #1 e #2).
+**Sessão:** Dedicated Server instalado e P02 testado no servidor real (bug do `next` achado e corrigido)
+**Fase atual:** Fase 0 (Fundação), em andamento. No `ROADMAP.md`: P00 aguardando teste (só a lista de mods no cliente), P01 concluído, P02 aguardando teste (cliente e merge dos PRs #1 e #2).
 
 ## Próximo passo
 
-1. **P00 (Rodrigo):** abrir o jogo e conferir que "Church Run" aparece na lista de mods sem erro no `%USERPROFILE%\Zomboid\console.txt`; instalar o Project Zomboid Dedicated Server (Steam → Biblioteca → Ferramentas).
-2. **P02 (Rodrigo):** rodar o checklist "Teste no jogo" do PR #1 e depois o do PR #2 (cerca de 10 min cada). Se passar: mesclar o #1 e depois o #2 (a base do #2 muda sozinha para a `main`), escrever "42.21.0" em "Versão mínima do jogo testada" nas duas specs e marcar o P02 como concluído no ROADMAP. Se falhar: anotar no PR o que apareceu no `console.txt`.
-3. **Claude, assim que o P00 fechar:** escrever a SPEC-010 (igrejas e âncoras) e o roteiro de coleta do P06 para Rosewood (`GUIA-CLAUDE.md` §2, "Dados do mapa"). Com o P02 concluído, ficam desbloqueadas as provas técnicas P03, P04 e P05.
+1. **Rodrigo (cerca de 15 min):** o repositório já está na branch `spec-002-persistencia`, que inclui os dois PRs e é a que o jogo lê pelo link.
+   - Abrir o jogo com `-debug` e ver "Church Run" na lista de mods. Isso fecha o P00.
+   - Seguir os checklists "Teste no jogo" do [PR #1](https://github.com/RodrigoRochaaa/church_run/pull/1) e do [PR #2](https://github.com/RodrigoRochaaa/church_run/pull/2). O servidor de teste sobe com `tools\start-dev-server.bat "D:\apps de jogo\steamapps\common\Project Zomboid Dedicated Server"`.
+   - Se passar: mesclar o #1 e depois o #2, completar "Versão mínima do jogo testada" nas specs com o lado do cliente e marcar o P02 como concluído.
+2. **Claude, com o P00 fechado:** escrever a SPEC-010 (igrejas e âncoras) e o roteiro de coleta do P06 para Rosewood (`GUIA-CLAUDE.md` §2, "Dados do mapa").
 
 ## O que foi feito
 
-- SPEC-001 e SPEC-002 aprovadas pelas respostas recomendadas (ver "Decisões tomadas").
-- ADR-005: o código do cliente fica em `ChurchRun/Client/` e o do servidor em `ChurchRun/Server/`. Motivo: o `require` do jogo procura o nome nas três pastas, e o vanilla 42.21.0 não repete nenhum caminho entre elas. `CLAUDE.md`, `CONTEXT.md` e SPEC-002 ajustados.
-- [PR #1](https://github.com/RodrigoRochaaa/church_run/pull/1), SPEC-001 (branch `spec-001-protocolo`):
-  - catálogo e validador de esquema; roteador na ordem do R4, com rate limit por jogador e comando e log de auditoria limitado a 10 linhas por minuto;
-  - ping no `OnCreatePlayer`, aviso de versão diferente (`ISModalDialog`, traduções EN e PT-BR) e entrega em single player por `triggerEvent`;
-  - adaptadores, ports e os dois `Main.lua`; 73 testes.
-- [PR #2](https://github.com/RodrigoRochaaa/church_run/pull/2), SPEC-002 (branch `spec-002-persistencia`, em cima do #1):
-  - `ChurchRun_World` v1 (`createdAtMs`, `bootCount`), migrações tudo-ou-nada com backup e modo seguro;
-  - trava do roteador: sem os dados, só o ping passa; 98 testes no total.
-- CI verde nos dois PRs, com o luacheck sem avisos em 40 arquivos. Isso resolveu o VERIFICAR dos globs do `.luacheckrc`: `**` casa zero pastas.
-- API do 42.21.0 conferida no Lua vanilla, no Umbrella e nas classes do jogo:
-  - `ISModalDialog:new(x, y, w, h, texto, simNao)`;
-  - `getText(chave, a, b)` com `%1`/`%2`;
-  - `OnCreatePlayer(playerIndex, player)`;
-  - `args` chega `nil` quando a tabela está vazia;
-  - mods publicam o próprio `Translate/EN/UI.json`.
+- **Dedicated Server instalado** pelo atalho `steam://install/380870` (build 25485538, 7,1 GB). O `DEPENDENCIES.md` agora explica que ele fica escondido em "Ferramentas" na Biblioteca da Steam.
+- **Servidor de teste `churchrun_dev`** (sem Steam, até 5 GB), subido 5 vezes por script com `quit` no fim, sem tocar no `servertest` do jogo. Achados:
+  - o servidor dedicado só lê mods locais de `Zomboid\mods`. O link de desenvolvimento passou do Workshop para `Zomboid\mods\church_run`, que o jogo também lê;
+  - **bug:** o Kahlua não tem `next`. Quebrou a carga do `WorldStore` (o `pcall` segurou, e o servidor ficou em modo seguro) e teria quebrado a varredura do rate limit. Correção com `pairs` (`Tables.isEmpty`), testes de regressão sem `next` e lint com o std `kahlua`, montado a partir das bibliotecas do `projectzomboid.jar` (`CLAUDE.md` §6.2);
+  - **persistência:** SPEC-002 CA1 e CA2 conferidos, com `bootCount` 1, 2 e 3 e o mesmo `createdAtMs`. O `OnInitGlobalModData` roda antes do `SERVER STARTED`;
+  - **log limpo:** pastas vazias `media/AnimSets` e `media/actiongroups` no esqueleto eliminam 4 linhas de ERROR que o jogo registra para mods sem elas;
+  - **traduções:** pelas strings do jar, o tradutor soma o `UI.json` de cada mod ao do jogo. O "overrides" do log é só o sistema de arquivos.
+- `tools\start-dev-server.bat` sobe o servidor sem o `StartServer64.bat`, que reserva 16 GB e só repassa dois argumentos. Ajustados o `DEPENDENCIES.md` (§3 passo 8 e §5 B) e o `CONTEXT.md` §5.
+- PRs atualizados, com os resultados do servidor nas descrições: #1 com 74 testes e #2 com 101, lint com 0 avisos.
 
 ## Decisões tomadas
 
-Todas pelas recomendações, sob a autonomia dada pelo Rodrigo em 26/10/2026; podem ser revistas quando ele voltar.
+Pela autonomia dada pelo Rodrigo em 26/10/2026, todas reversíveis:
 
-- SPEC-001: single player suportado (R16); limites de comando ajustáveis pelo admin ficam para uma spec futura.
-- SPEC-002: backup antes de migrar mantido; single player com a mesma persistência (R12).
-- GDD §13: a primeira fatia jogável segue o ROADMAP, e a carteira entra na Fase 2 (GUIA §6.1).
-- ADR-005 (caminhos Lua únicos).
-- Mensagens de erro de desenvolvedor em inglês ASCII, porque não se sabe com que codificação o Kahlua lê o código; comentários continuam em português.
-- O P02 começou com o P00 ainda "aguardando teste". O que falta no P00 é só o teste no jogo, que não afeta o código Lua puro. Para cumprir a regra de dependências do GUIA, os PRs só devem ser mesclados depois desse teste.
+- Link de desenvolvimento em `Zomboid\mods\church_run`; o link do Workshop volta só na publicação (Fase 7).
+- Servidor de teste separado, `churchrun_dev`, com config em `%USERPROFILE%\Zomboid\Server\churchrun_dev.ini`.
+- O lint do código do mod passa a usar o std `kahlua` (só o que existe no jogo); os testes continuam no Lua 5.1 completo.
+- Pastas vazias de animação no esqueleto do mod, para o log do servidor não acusar ERROR.
 
 ## Pendências e bloqueios
 
-- Testes no jogo do P00 e do P02 (Rodrigo). Nada é mesclado sem eles (`CLAUDE.md` §8: PR que toca rede ou dados precisa do checklist de MP).
-- VERIFICAR B42, a confirmar nesses testes:
-  - em single player, a resposta volta por `triggerEvent`;
-  - o `OnCreatePlayer` dispara quando o servidor já aceita pedidos;
+- Teste com cliente (Rodrigo) e merge dos PRs, na ordem #1 e depois #2.
+- VERIFICAR B42 que só o teste com cliente responde:
+  - a resposta em single player por `triggerEvent`;
+  - o `OnCreatePlayer` dispara depois de o servidor aceitar pedidos;
   - onde o `writeLog` grava;
-  - o `OnInitGlobalModData` dispara antes do primeiro jogador;
-  - uma Global ModData transmitida pelo cliente não é gravada pelo servidor.
-- Decisões do GDD §14 por fase: Fase 1, #1 (cadeia) e #5 (corpo do morto); Fase 2, #2 (carteira); Fase 3, #8 (os 30 buffs); Fase 5, #3, #4 e #9; Fase 6, #7; depois da 1.0, #6. Sob a autonomia, cada uma recebe a proposta do GDD quando a fase dela chegar, a menos que o Rodrigo diga outra coisa.
-- Para as specs futuras:
-  - risco de farmar o Kit do Peregrino morrendo de propósito (spec do P06a);
-  - a posição da relíquia escondida não pode ficar na Global ModData, que qualquer cliente lê (SPEC-080);
-  - item dado pelo servidor precisa aparecer no cliente sem sincronização extra (VERIFICAR do P06a).
-- WSL antes de rodar os testes no próprio PC; até lá, o CI roda tudo.
+  - uma Global ModData transmitida pelo cliente não é gravada.
+- Decisões do GDD §14 por fase, sem mudança: Fase 1, #1 e #5; Fase 2, #2; Fase 3, #8; Fase 5, #3, #4 e #9; Fase 6, #7; depois da 1.0, #6.
+- Para specs futuras:
+  - risco de farmar o Kit do Peregrino (P06a);
+  - a posição da relíquia escondida não pode ficar na Global ModData (SPEC-080);
+  - item dado pelo servidor precisa aparecer no cliente (VERIFICAR do P06a).
+- WSL para rodar os testes no próprio PC; até lá, o CI roda tudo.
 
 ## Arquivos tocados
 
-Na `main`: `specs/001-protocolo-comandos.md`, `specs/002-persistencia.md`, `specs/README.md`, `specs/checklist-mp.md`, `specs/decisions/ADR-005-caminhos-lua-unicos.md`, `CLAUDE.md`, `CONTEXT.md`, `DOCS-GUIDE.md`, `design/church_run_gdd.md`, `ROADMAP.md`, `JOURNAL.md`. Nos PRs: `Contents/mods/church_run/42/media/lua/**`, `tests/**`, `.busted`, `.luacheckrc`, `DEPENDENCIES.md`, `CHANGELOG.md` e as duas specs.
+Na `main`: `DEPENDENCIES.md`, `CONTEXT.md`, `ROADMAP.md`, `JOURNAL.md`, `tools/start-dev-server.bat` e as pastas vazias em `Contents/mods/church_run/{common,42}/media/{AnimSets,actiongroups}/`. Nos PRs: `.luacheckrc`, `CLAUDE.md` §6.2, `RateLimiter.lua`, `Tables.lua`, `WorldStore.lua`, os testes de regressão e as duas specs. Fora do repositório: `%USERPROFILE%\Zomboid\mods\church_run` (link novo), `%USERPROFILE%\Zomboid\Server\churchrun_dev.ini` e o save `churchrun_dev`.

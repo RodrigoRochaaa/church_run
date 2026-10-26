@@ -14,9 +14,9 @@ Atualizado em: 26/10/2026.
 
 | Passo | O que entrega | Depende de | Referência | Status |
 | --- | --- | --- | --- | --- |
-| P00 | Repositório no GitHub, ambiente do `DEPENDENCIES.md`, esqueleto de pastas e `mod.info` do church_run carregando sem erro | — | `DEPENDENCIES.md`, `CONTEXT.md` §5 | aguardando teste: repositório, CI, esqueleto e `mod.info` feitos em 26/10/2026; falta o Rodrigo ver o mod na lista do jogo sem erro e instalar o Dedicated Server |
+| P00 | Repositório no GitHub, ambiente do `DEPENDENCIES.md`, esqueleto de pastas e `mod.info` do church_run carregando sem erro | — | `DEPENDENCIES.md`, `CONTEXT.md` §5 | aguardando teste: repositório, CI, esqueleto, `mod.info` e Dedicated Server prontos em 26/10/2026, e o servidor dedicado 42.21.0 carrega o mod sem erro; falta o Rodrigo ver o mod na lista do jogo (cliente) |
 | P01 | Decisões em aberto fechadas: ADR-002 (progressão global) e ADR-003 (licença e dependências) | — | GDD §14, ADR-002, ADR-003 | concluído (26/10/2026) |
-| P02 | Protocolo de comandos e persistência; ida e volta cliente/servidor funcionando | P00 | SPEC-001, SPEC-002 | aguardando teste: SPEC-001 e SPEC-002 aprovadas e implementadas nos PRs #1 e #2 (CI verde, 98 testes); falta o teste no jogo e o merge |
+| P02 | Protocolo de comandos e persistência; ida e volta cliente/servidor funcionando | P00 | SPEC-001, SPEC-002 | aguardando teste: SPEC-001 e SPEC-002 implementadas nos PRs #1 e #2 (CI verde, 101 testes). No servidor dedicado 42.21.0 já passaram a carga, o `serverReady` e a persistência no reinício (`bootCount` 1, 2, 3); falta o teste com cliente e o merge |
 
 ## Fase 1 · Igreja 1 jogável (Rosewood)
 
