@@ -6,7 +6,7 @@ Uma spec por funcionalidade, no formato do `CLAUDE.md` §2.1 (modelo: [`000-temp
 
 | Spec | Título | Status | Fase | Versão do jogo testada |
 |---|---|---|---|---|
-| [SPEC-001](001-protocolo-comandos.md) | Protocolo de comandos | aprovada | 0 | — |
+| [SPEC-001](001-protocolo-comandos.md) | Protocolo de comandos | implementada, aguardando teste no jogo | 0 | — |
 | [SPEC-002](002-persistencia.md) | Persistência | aprovada | 0 | — |
 
 ## ADRs
