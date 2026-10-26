@@ -5,9 +5,9 @@ local Tables = {}
 local PLAIN_TYPES = { string = true, number = true, boolean = true }
 
 -- O Kahlua do B42 não tem next (CLAUDE.md §6.2), então a tabela vazia é conferida com pairs. O laço
--- sai de propósito na primeira chave; daí o ignore do aviso 571 (laço que roda no máximo uma vez).
+-- sai de propósito na primeira chave; daí o ignore do aviso 512 (laço que roda no máximo uma vez).
 function Tables.isEmpty(tbl)
-    for _ in pairs(tbl) do -- luacheck: ignore 571
+    for _ in pairs(tbl) do -- luacheck: ignore 512
         return false
     end
     return true
