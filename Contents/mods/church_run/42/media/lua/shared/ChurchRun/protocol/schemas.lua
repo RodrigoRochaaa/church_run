@@ -81,10 +81,10 @@ local VALUE_CHECKS = {
 
 local function checkLengthDef(def)
     if not isInteger(def.maxLen) or def.maxLen < 1 or def.maxLen > Schemas.MAX_STRING_LEN then
-        return false, "maxLen deve ser inteiro de 1 a " .. Schemas.MAX_STRING_LEN
+        return false, "maxLen must be an integer from 1 to " .. Schemas.MAX_STRING_LEN
     end
     if def.minLen ~= nil and (not isInteger(def.minLen) or def.minLen < 0 or def.minLen > def.maxLen) then
-        return false, "minLen deve ser inteiro de 0 a maxLen"
+        return false, "minLen must be an integer from 0 to maxLen"
     end
     return true
 end
@@ -92,7 +92,7 @@ end
 local function checkRangeDef(def)
     local numbers = type(def.min) == "number" and type(def.max) == "number"
     if not numbers or not isFinite(def.min) or not isFinite(def.max) or def.min > def.max then
-        return false, "min e max devem ser números finitos, com min <= max"
+        return false, "min and max must be finite numbers with min <= max"
     end
     return true
 end
@@ -103,11 +103,11 @@ end
 
 local function checkEnumDef(def)
     if type(def.values) ~= "table" or #def.values == 0 then
-        return false, "enum precisa de uma lista de valores"
+        return false, "enum needs a list of values"
     end
     for _, allowed in ipairs(def.values) do
         if type(allowed) ~= "string" then
-            return false, "os valores de enum devem ser texto"
+            return false, "enum values must be strings"
         end
     end
     return true
@@ -124,10 +124,10 @@ local DEF_CHECKS = {
 -- Confere a definição de um campo; usado na conferência do catálogo, na carga.
 function Schemas.checkFieldDef(def)
     if type(def) ~= "table" or DEF_CHECKS[def.type] == nil then
-        return false, "tipo de campo desconhecido"
+        return false, "unknown field type"
     end
     if def.optional ~= nil and type(def.optional) ~= "boolean" then
-        return false, "optional deve ser booleano"
+        return false, "optional must be boolean"
     end
     return DEF_CHECKS[def.type](def)
 end

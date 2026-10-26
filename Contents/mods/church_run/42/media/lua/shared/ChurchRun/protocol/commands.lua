@@ -18,16 +18,20 @@ Commands.REJECTED = "rejected"
 
 Commands.REASON_INVALID_ARGS = "invalidArgs"
 Commands.REASON_INTERNAL_ERROR = "internalError"
+Commands.REASON_SERVER_DATA_UNAVAILABLE = "serverDataUnavailable"
 
 local NAME_PATTERN = "^[a-z][A-Za-z0-9]*$"
 
 local NONCE = { type = "integer", min = 0, max = Commands.NONCE_MAX }
 local PROTOCOL_VERSION = { type = "integer", min = 1, max = 1000 }
 
+-- requiresData: todo comando toServer precisa dos dados carregados, a menos que diga false; em modo
+-- seguro da persistência só esses passam (SPEC-002 R6).
 Commands.catalog = {
     [Commands.PING] = {
         direction = Commands.TO_SERVER,
         rateLimit = { burst = 3, perSecond = 0.2 },
+        requiresData = false,
         schema = { nonce = NONCE },
     },
     [Commands.PONG] = {
@@ -44,7 +48,11 @@ Commands.catalog = {
             command = { type = "string", minLen = 1, maxLen = Commands.MAX_NAME_LEN },
             reason = {
                 type = "enum",
-                values = { Commands.REASON_INVALID_ARGS, Commands.REASON_INTERNAL_ERROR },
+                values = {
+                    Commands.REASON_INVALID_ARGS,
+                    Commands.REASON_INTERNAL_ERROR,
+                    Commands.REASON_SERVER_DATA_UNAVAILABLE,
+                },
             },
             field = { type = "string", minLen = 1, maxLen = Commands.MAX_NAME_LEN, optional = true },
         },
@@ -64,27 +72,27 @@ end
 
 local function checkRateLimit(limit)
     if type(limit) ~= "table" then
-        return false, "comando toServer precisa de rateLimit"
+        return false, "toServer command needs rateLimit"
     end
     local burst, perSecond = limit.burst, limit.perSecond
     local burstOk = type(burst) == "number" and burst >= 1 and burst == math.floor(burst)
     local refillOk = type(perSecond) == "number" and perSecond > 0 and perSecond < math.huge
     if not burstOk or not refillOk then
-        return false, "rateLimit precisa de burst inteiro >= 1 e perSecond > 0"
+        return false, "rateLimit needs integer burst >= 1 and perSecond > 0"
     end
     return true
 end
 
 local function checkSchema(schema)
     if type(schema) ~= "table" then
-        return false, "schema deve ser uma tabela"
+        return false, "schema must be a table"
     end
     for field, def in pairs(schema) do
         if not isValidName(field) then
-            return false, "nome de campo inválido: " .. tostring(field)
+            return false, "invalid field name: " .. tostring(field)
         end
         if field == Commands.VERSION_FIELD then
-            return false, "o campo " .. Commands.VERSION_FIELD .. " é reservado"
+            return false, "field " .. Commands.VERSION_FIELD .. " is reserved"
         end
         local ok, err = Schemas.checkFieldDef(def)
         if not ok then
@@ -96,10 +104,13 @@ end
 
 local function checkCommand(name, def)
     if not isValidName(name) then
-        return false, "nome de comando inválido"
+        return false, "invalid command name"
     end
     if type(def) ~= "table" or (def.direction ~= Commands.TO_SERVER and def.direction ~= Commands.TO_CLIENT) then
-        return false, "direção inválida"
+        return false, "invalid direction"
+    end
+    if def.requiresData ~= nil and type(def.requiresData) ~= "boolean" then
+        return false, "requiresData must be boolean"
     end
     if def.direction == Commands.TO_SERVER then
         local ok, err = checkRateLimit(def.rateLimit)
