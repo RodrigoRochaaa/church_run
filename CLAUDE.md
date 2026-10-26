@@ -180,6 +180,7 @@ Toda spec que adiciona um comando precisa da seção **Segurança** preenchida.
 ### 6.2 Cuidados específicos do Project Zomboid
 
 - Kahlua não tem `io` nem `os` completos; não use bibliotecas externas que dependam deles.
+- Kahlua não é o Lua 5.1 inteiro: faltam, por exemplo, `next` e `xpcall` (conferido no 42.21.0, nas bibliotecas do `projectzomboid.jar` e no `stdlib.lua`). Um `next` passou nos testes, que rodam no Lua 5.1 completo, e quebrou no servidor real. Por isso o lint do código do mod usa o std `kahlua` do `.luacheckrc`, só com o que existe. Para saber se uma tabela está vazia, use um laço `pairs`.
 - Listas Java começam em 0 e usam `:size()`/`:get(i)`; converta para tabela Lua no adaptador, nunca no domínio.
 - Guarde em `local` o resultado de chamadas Java repetidas dentro de loops.
 - Proibido lógica pesada em `OnTick` e `OnPlayerUpdate`. Prefira eventos específicos (`OnZombieDead`, `EveryOneMinute`, `EveryTenMinutes`) e trabalho em lotes.

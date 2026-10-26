@@ -1,0 +1,14 @@
+-- Configuração do busted (CLAUDE.md §7). O package.path tem as três pastas de Lua do mod, como o
+-- require do jogo (ADR-005), mais tests/ para os falsos.
+return {
+    _all = {
+        lpath = "Contents/mods/church_run/42/media/lua/shared/?.lua;"
+            .. "Contents/mods/church_run/42/media/lua/client/?.lua;"
+            .. "Contents/mods/church_run/42/media/lua/server/?.lua;"
+            .. "tests/?.lua",
+    },
+    default = {
+        ROOT = { "tests" },
+        pattern = "_spec",
+    },
+}

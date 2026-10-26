@@ -1,7 +1,7 @@
 # SPEC-001 Protocolo de comandos
 
-- **Status:** aprovada em 26/10/2026, com as respostas recomendadas às questões em aberto (single player suportado; limites ajustáveis numa spec futura), sob a autonomia dada pelo Rodrigo
-- **Versão mínima do jogo testada:** — (API conferida no código do 42.21.0 em 26/10/2026; nada testado no jogo ainda)
+- **Status:** implementada em 26/10/2026 (branch `spec-001-protocolo`), aguardando o teste no jogo do PR. Aprovada no mesmo dia com as respostas recomendadas às questões em aberto (single player suportado; limites ajustáveis numa spec futura), sob a autonomia dada pelo Rodrigo
+- **Versão mínima do jogo testada:** 42.21.0, só no servidor dedicado (26/10/2026): o mod carrega, o catálogo passa na conferência no Kahlua e o servidor registra `serverReady`, sem erro de Lua. O lado do cliente (ping, pong, aviso de versão) espera o teste do Rodrigo.
 - **Fase:** 0 (`CONTEXT.md` §6)
 - **ADRs ligadas:** [ADR-001](decisions/ADR-001-servidor-autoritativo.md), [ADR-004](decisions/ADR-004-id-e-namespace.md)
 - **Depende de:** —
@@ -38,7 +38,7 @@ Cliente e servidor precisam de um canal único e seguro para pedidos e respostas
   
   Só depois o handler do caso de uso roda. Um campo desconhecido encerra a validação na hora, sem percorrer o resto da tabela. A SPEC-002 acrescenta um passo depois do 5: com a persistência em modo seguro, só o `ping` é atendido.
 - **R5. Versão do protocolo.** `shared/ChurchRun/protocol/version.lua` define `PROTOCOL_VERSION`, inteiro que começa em 1. Todo pedido leva `pv` nos argumentos, e quem acrescenta é o cliente de rede (`net/`), nunca a UI. `pv` ausente, que não seja inteiro ou diferente da versão do servidor → o servidor responde `versionMismatch` e não executa o pedido. Ao receber `versionMismatch`, o cliente mostra uma janela com uma mensagem traduzida (EN e PT-BR) e para de enviar pedidos até o jogo ser reiniciado. A versão sobe quando um comando muda de forma incompatível, o que é versão major do mod (`CLAUDE.md` §8). Com `DoLuaChecksum=true` (padrão do servidor), um cliente com Lua diferente nem entra; a checagem cobre servidores com o checksum desligado.
-- **R6. Identidade.** Quem pede é sempre o `player` recebido em `OnClientCommand`, identificado pelo username. Argumentos nunca dizem quem pede.
+- **R6. Identidade.** Quem pede é sempre o `player` recebido em `OnClientCommand`, identificado pelo username. Argumentos nunca dizem quem pede. Se o jogo não informar o username, o roteador usa `?` no log e no balde.
 - **R7. Rate limit por jogador e por comando** (balde de fichas). Cada comando `toServer` declara `burst` (fichas máximas) e `perSecond` (reposição). O balde começa cheio. Pedido sem ficha é descartado: log `rateLimited` e nenhuma resposta, para não devolver uma mensagem a cada pedido de spam. O relógio é o real (`getTimestampMs()`, pelo port `Clock`), não o do jogo.
 - **R8. Log de recusas.** Toda recusa gera uma linha de auditoria no servidor com username, comando, motivo e horário, sem outros dados pessoais. Cada jogador grava no máximo 10 linhas de recusa por minuto. As excedentes são contadas, e a próxima linha registrada sobre o jogador informa quantas foram suprimidas; se ele parar de mandar pedidos, a varredura do R14 registra a contagem. Texto vindo do cliente (ex.: nome de comando desconhecido) vai para o log com no máximo 32 caracteres e sem quebras de linha nem caracteres de controle, para ninguém forjar linhas de log.
 - **R9. Resposta a recusas.** Pedido recusado por `invalidArgs` ou por erro interno (R10) recebe `rejected { command, reason, field? }`, para o cliente mostrar a falha em vez de esperar para sempre. Comando desconhecido e pedido sem ficha não recebem resposta.
@@ -65,13 +65,19 @@ Novos motivos de `rejected` entram pela spec que os usa (ex.: SPEC-002 acrescent
 
 ### Textos para o jogador
 
-| Chave | Arquivo | EN | PT-BR |
+| Chave | Arquivo | EN | PT-BR e PT |
 |---|---|---|---|
-| `UI_ChurchRun_VersionMismatch` | `shared/Translate/EN/UI.json` e `PTBR/UI.json` | "Church Run: this server uses protocol version %1 and your mod uses %2. Update the mod and restart the game." | "Church Run: este servidor usa a versão %1 do protocolo e o seu mod usa a %2. Atualize o mod e reinicie o jogo." |
+| `UI_ChurchRun_VersionMismatch` | `shared/Translate/EN/UI.json`, `PTBR/UI.json` e `PT/UI.json` | "Church Run: this server uses protocol version %1 and your mod uses %2. Update the mod and restart the game." | "Church Run: este servidor usa a versão %1 do protocolo e o seu mod usa a %2. Atualize o mod e reinicie o jogo." |
 
 ### Log
 
-Formato de linha: `[ChurchRun] <NÍVEL> <evento> chave=valor ...`. Eventos desta spec: `ping`, `unknownCommand`, `rateLimited`, `invalidArgs`, `versionMismatch`, `handlerError`. Recusas são de auditoria (R8).
+Formato de linha: `[ChurchRun] <NÍVEL> <evento> chave=valor ...`, com os campos em ordem alfabética e cada valor limpo e cortado em 64 caracteres.
+
+| Lado | Eventos |
+|---|---|
+| Servidor, auditoria (R8) | `unknownCommand`, `rateLimited`, `versionMismatch`, `invalidArgs`, `refusalsSuppressed` |
+| Servidor, demais | `serverReady`, `serverDisabled`, `ping`, `handlerError`, `routerError` |
+| Cliente | `pong`, `unexpectedPong`, `rejected`, `versionMismatch`, `sendBlocked`, `unknownCommand`, `invalidArgs`, `unknownServerCommand`, `invalidServerArgs`, `clientError`, `clientDisabled` |
 
 ### Dados salvos
 
