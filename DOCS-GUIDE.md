@@ -10,6 +10,7 @@
 | `CONTEXT.md` | "O que é o projeto e em que ordem fazemos?" | Quem fecha uma fase ou muda o escopo | Fim de fase, mudança de escopo | Editado |
 | `design/church_run_gdd.md` | "O que o jogo é, com números e decisões?" (manda no **o quê**) | O Rodrigo, ou alguém com a aprovação dele | Decisão de design nova; resultado de prova técnica (§12 e §5.4) | Editado; decisão nova entra no §1.2 com a data |
 | `design/lojas.md`, `design/buffs.md` | Anexos do GDD: catálogo das lojas; buffs candidatos e regras do sorteio | Como o GDD | Como o GDD | Editado; versão nova substitui a antiga, que fica no Git |
+| `design/coleta-mapa.md` | "Como coleto no jogo os pontos de uma igreja?" | Quem muda os pontos da SPEC-010 | Quando a SPEC-010 muda | Editado; os pontos coletados vão para `defs/`, não para este arquivo |
 | `ROADMAP.md` | "Que passo vem agora e do que ele depende?" (manda no **quando**) | Quem toca um passo | Toda sessão que muda um status | Editado (status e passos) |
 | `GUIA-CLAUDE.md` | "Como escolho o próximo passo, o que pesquiso e como aviso o Rodrigo?" | Quem muda o jeito de trabalhar | Raro | Editado |
 | `PROMPT-SESSAO.md` | "O que colo no início de cada sessão?" | Quem muda o ritual de sessão | Raro | Editado |

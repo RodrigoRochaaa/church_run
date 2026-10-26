@@ -14,9 +14,9 @@ Atualizado em: 26/10/2026.
 
 | Passo | O que entrega | Depende de | Referência | Status |
 | --- | --- | --- | --- | --- |
-| P00 | Repositório no GitHub, ambiente do `DEPENDENCIES.md`, esqueleto de pastas e `mod.info` do church_run carregando sem erro | — | `DEPENDENCIES.md`, `CONTEXT.md` §5 | aguardando teste: repositório, CI, esqueleto e `mod.info` feitos em 26/10/2026; falta o Rodrigo ver o mod na lista do jogo sem erro e instalar o Dedicated Server |
+| P00 | Repositório no GitHub, ambiente do `DEPENDENCIES.md`, esqueleto de pastas e `mod.info` do church_run carregando sem erro | — | `DEPENDENCIES.md`, `CONTEXT.md` §5 | aguardando teste: repositório, CI, esqueleto, `mod.info` e Dedicated Server prontos em 26/10/2026, e o servidor dedicado 42.21.0 carrega o mod sem erro; falta o Rodrigo ver o mod na lista do jogo (cliente) |
 | P01 | Decisões em aberto fechadas: ADR-002 (progressão global) e ADR-003 (licença e dependências) | — | GDD §14, ADR-002, ADR-003 | concluído (26/10/2026) |
-| P02 | Protocolo de comandos e persistência; ida e volta cliente/servidor funcionando | P00 | SPEC-001, SPEC-002 | aguardando teste: SPEC-001 e SPEC-002 aprovadas e implementadas nos PRs #1 e #2 (CI verde, 98 testes); falta o teste no jogo e o merge |
+| P02 | Protocolo de comandos e persistência; ida e volta cliente/servidor funcionando | P00 | SPEC-001, SPEC-002 | aguardando teste: SPEC-001 e SPEC-002 implementadas nos PRs #1 e #2 (CI verde, 101 testes). No servidor dedicado 42.21.0 já passaram a carga, o `serverReady` e a persistência no reinício (`bootCount` 1, 2, 3); falta o teste com cliente e o merge |
 
 ## Fase 1 · Igreja 1 jogável (Rosewood)
 
@@ -27,7 +27,7 @@ Meta: dois jogadores conquistam Rosewood num servidor dedicado.
 | P03 | Prova técnica: teleportar o jogador no MP sem o anti-cheat agir | P02 | GDD §2.2, §12 | pendente |
 | P04 | Prova técnica: gerar zumbis em pontos fixos a 40–60 tiles e mandá-los até a porta; medir o raio da área carregada | P02 | GDD §4.3, §12 | pendente |
 | P05 | Prova técnica: painel fixo à esquerda e símbolo no mapa | P02 | GDD §9, §12 | pendente |
-| P06 | Dados da igreja de Rosewood: altar, raio, 6 a 10 âncoras, ponto de nascimento (roteiro do Claude, coleta do Rodrigo no modo debug) | P00 | SPEC-010 | pendente |
+| P06 | Dados da igreja de Rosewood: altar, raio, 6 a 10 âncoras, ponto de nascimento (roteiro do Claude, coleta do Rodrigo no modo debug) | P00 | SPEC-010 | aguardando Rodrigo: SPEC-010 aprovada e roteiro em `design/coleta-mapa.md`; falta a coleta no jogo |
 | P06a | Kit do Peregrino: mochila básica com taco e 3 bandagens no personagem novo; enquanto Rosewood não for conquistada, a mochila traz a relíquia de Rosewood. As 30 moedas do kit entram com o P13 | P02 | SPEC-011 (kit no nascimento), SPEC-020 (altar com relíquia), GDD §11.1. VERIFICAR B42: item dado pelo servidor aparece no cliente sem sincronização extra | pendente |
 | P07 | Cerco: estados, votação, participantes, gerador de zumbis e ondas da igreja 1 | P04, P06, P06a | SPEC-020, 021, 022 | pendente |
 | P08 | Morte no cerco e sala de espera | P03, P07 | SPEC-030 | pendente |

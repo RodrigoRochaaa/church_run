@@ -41,6 +41,7 @@ Um grupo atravessa Knox Country de sul a norte conquistando 5 igrejas. Cada conq
 | 2026-10-26 | Licença: MIT para o código e CC BY 4.0 para a arte ([ADR-003](../specs/decisions/ADR-003-licenca.md)) |
 | 2026-10-26 | Kit do Peregrino numa mochila básica, já na Fase 1. Enquanto Rosewood não for conquistada, a mochila traz a relíquia de Rosewood |
 | 2026-10-26 | Da igreja 2 em diante, a relíquia é escondida e precisa ser achada (seção 7.1) |
+| 2026-10-26 | Cadeia Rosewood → March Ridge → Muldraugh → West Point → Louisville (proposta da seção 2, aprovada pela recomendação sob a autonomia dada pelo Rodrigo; usada na SPEC-010) |
 
 ---
 
@@ -432,7 +433,7 @@ Tudo que é número de balanceamento vira opção, porque um mod aberto vai roda
 
 ## 14. Decisões em aberto
 
-1. Aprovar a cadeia Rosewood → March Ridge → Muldraugh → West Point → Louisville.
+1. Cadeia de cidades: decidida em 26/10/2026 (seção 1.2).
 2. Carteira virtual (recomendado) ou moeda física no corpo.
 3. Teleporte a 10 moedas com recarga de 5 min.
 4. Descontos de 10% e 20% nas igrejas 4 e 5.

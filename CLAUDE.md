@@ -168,7 +168,7 @@ Toda spec que adiciona um comando precisa da seção **Segurança** preenchida.
 
 ### 6.1 Estilo
 
-- Identificadores, nomes de arquivo e IDs técnicos em **inglês**; comentários, specs e textos de commit em português. Textos para o jogador só via arquivos de tradução (EN e PT-BR no mínimo), nunca escritos no código.
+- Identificadores, nomes de arquivo e IDs técnicos em **inglês**; comentários, specs e textos de commit em português. Textos para o jogador só via arquivos de tradução (EN, PT-BR e PT no mínimo), nunca escritos no código. O PT (português de Portugal, pasta `PT`) entrou porque é o idioma em que o jogo do Rodrigo está, e o PZ não usa o PT-BR no lugar dele: sem o arquivo, quem joga em PT vê o texto em inglês.
 - Módulos: `local M = {}` ... `return M`. Nada de variáveis globais; o único global permitido é a tabela raiz `ChurchRun`, criada no bootstrap.
 - Sempre `local` para variáveis e funções.
 - Nomes: `PascalCase` para módulos e "classes", `camelCase` para funções e variáveis, `UPPER_SNAKE` para constantes.
@@ -231,7 +231,7 @@ Uma tarefa só está pronta quando:
 - [ ] Nenhuma chamada à API do jogo fora de `adapters/`, dos bootstraps e da exceção da UI (§3.4).
 - [ ] Todo comando novo tem esquema, validação, rate limit e seção de segurança na spec.
 - [ ] Mudança de dados tem `schemaVersion` novo e migração testada.
-- [ ] Textos para o jogador estão em tradução EN e PT-BR.
+- [ ] Textos para o jogador estão em tradução EN, PT-BR e PT.
 - [ ] Testes unitários e lint passam.
 - [ ] Checklist de MP executado, quando aplicável.
 - [ ] Spec, CHANGELOG e, se houver decisão nova, ADR atualizados.
