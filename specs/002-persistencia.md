@@ -1,6 +1,6 @@
 # SPEC-002 Persistência
 
-- **Status:** aprovada em 26/10/2026, com as respostas recomendadas às questões em aberto (backup antes de migrar; single player com a mesma persistência), sob a autonomia dada pelo Rodrigo
+- **Status:** implementada em 26/10/2026 (branch `spec-002-persistencia`), aguardando o teste no jogo do PR. Aprovada no mesmo dia com as respostas recomendadas às questões em aberto (backup antes de migrar; single player com a mesma persistência), sob a autonomia dada pelo Rodrigo
 - **Versão mínima do jogo testada:** — (API conferida no código do 42.21.0 em 26/10/2026; nada testado no jogo ainda)
 - **Fase:** 0 (`CONTEXT.md` §6)
 - **ADRs ligadas:** [ADR-001](decisions/ADR-001-servidor-autoritativo.md), [ADR-002](decisions/ADR-002-progressao-global.md), [ADR-004](decisions/ADR-004-id-e-namespace.md)
@@ -32,7 +32,7 @@ O estado do mod tem de sobreviver a reinícios do servidor e a atualizações do
   No fim de uma carga sem modo seguro, `bootCount` soma 1 e o servidor registra uma linha `storage.loaded` com chave, versão, `bootCount` e `createdAtMs`.
 - **R5. Migração tudo-ou-nada.** As migrações rodam sobre uma cópia dos dados. Só se todos os passos derem certo: (a) o original é copiado para `ChurchRun_World_backup`, que guarda só a última versão anterior; (b) a cópia migrada substitui o conteúdo da chave, na mesma tabela; (c) o log registra a versão de origem e a de destino. Se um passo falhar, os dados originais e o backup ficam intactos, o erro vai para o log e o servidor entra em modo seguro.
 - **R6. Modo seguro.** O servidor não escreve na chave e registra um erro claro, por exemplo: "dados do church_run na versão 9; este mod entende até a 1: atualize o mod ou restaure o backup". Enquanto isso, o roteador da SPEC-001 só atende `ping`; os outros comandos recebem `rejected` com o motivo `serverDataUnavailable`. O mesmo vale antes de a carga terminar.
-- **R7. Migrações são funções puras**, uma por passo (`v1_to_v2`): recebem a tabela da versão N e devolvem `ok, tabelaN+1` ou `false, erro`, sem API do jogo. A lista é conferida na carga e nos testes: passos contínuos de 1 até a versão atual, sem buraco nem repetição. Lista inválida = modo seguro, com log.
+- **R7. Migrações são funções puras**, uma por passo (`v1_to_v2`): recebem a tabela da versão N e devolvem `ok, tabelaN+1` ou `false, erro`, sem API do jogo. Cada passo é `{ from = N, to = N + 1, run = função }`; quem grava o `schemaVersion` novo é o migrador, depois do passo, e um erro lançado dentro do passo conta como falha. A lista é conferida na carga e nos testes: passos contínuos de 1 até a versão atual, sem buraco nem repetição. Lista inválida = modo seguro, com log.
 - **R8. Durabilidade.** O jogo grava a Global ModData junto com o mundo, no salvamento automático e ao desligar o servidor. Uma queda entre dois salvamentos perde as mudanças desse intervalo; o mod não tenta contornar isso.
 - **R9. Formato v1 de `ChurchRun_World`:**
 
@@ -60,7 +60,12 @@ O estado do mod tem de sobreviver a reinícios do servidor e a atualizações do
 
 ### Log
 
-Eventos: `storage.loaded`, `storage.created`, `storage.migrated` (de, para), `storage.safeMode` (motivo, versão encontrada, versão suportada), `storage.migrationFailed` (passo, erro).
+Eventos: `storage.created`, `storage.loaded` (versão, `bootCount`, `createdAtMs`), `storage.migrated` (de, para), `storage.safeMode` (motivo, versão encontrada, versão suportada, erro e uma dica para o admin), `storageError` (erro inesperado na carga) e, no roteador, `serverDataUnavailable` (pedido recusado pelo R6). Motivos do modo seguro: `invalidMigrations`, `noSchemaVersion`, `newerSchema`, `migrationFailed`.
+
+### Catálogo e ports
+
+- O catálogo da SPEC-001 ganha o campo opcional `requiresData` (padrão `true`). Só comandos com `requiresData = false` passam no modo seguro; hoje, só o `ping`. O `rejected` ganha o motivo `serverDataUnavailable`.
+- Port `Storage`, com `open(chave)`: devolve a tabela viva da chave, criada vazia se não existir.
 
 ### Eventos e API do jogo usados
 
