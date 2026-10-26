@@ -16,7 +16,7 @@ Atualizado em: 26/10/2026.
 | --- | --- | --- | --- | --- |
 | P00 | Repositório no GitHub, ambiente do `DEPENDENCIES.md`, esqueleto de pastas e `mod.info` do church_run carregando sem erro | — | `DEPENDENCIES.md`, `CONTEXT.md` §5 | aguardando teste: repositório, CI, esqueleto e `mod.info` feitos em 26/10/2026; falta o Rodrigo ver o mod na lista do jogo sem erro e instalar o Dedicated Server |
 | P01 | Decisões em aberto fechadas: ADR-002 (progressão global) e ADR-003 (licença e dependências) | — | GDD §14, ADR-002, ADR-003 | concluído (26/10/2026) |
-| P02 | Protocolo de comandos e persistência; ida e volta cliente/servidor funcionando | P00 | SPEC-001, SPEC-002 | aguardando Rodrigo: SPEC-001 e SPEC-002 em rascunho, para aprovar |
+| P02 | Protocolo de comandos e persistência; ida e volta cliente/servidor funcionando | P00 | SPEC-001, SPEC-002 | aguardando teste: SPEC-001 e SPEC-002 aprovadas e implementadas nos PRs #1 e #2 (CI verde, 98 testes); falta o teste no jogo e o merge |
 
 ## Fase 1 · Igreja 1 jogável (Rosewood)
 
