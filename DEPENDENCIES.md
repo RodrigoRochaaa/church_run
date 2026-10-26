@@ -8,7 +8,7 @@
 | # | Ferramenta | Para quê | Onde |
 |---|---|---|---|
 | 1 | **Project Zomboid, Build 42.20+** | Rodar e testar o mod | Steam. O B42 está no branch público; não precisa escolher beta |
-| 2 | **Project Zomboid Dedicated Server** | Testar como num servidor real | Steam → Biblioteca → Ferramentas (grátis para quem tem o jogo). No Linux: SteamCMD, app `380870` |
+| 2 | **Project Zomboid Dedicated Server** | Testar como num servidor real | Grátis. O jeito mais fácil: com a Steam aberta, cole `steam://install/380870` no Executar do Windows (Win+R) e confirme. Pela Biblioteca, ele só aparece depois de marcar "Ferramentas" no menu "Jogos" do alto da lista. No Linux: SteamCMD, app `380870` |
 | 3 | **Git** | Versionar o código e guardar o histórico do `JOURNAL.md` | https://git-scm.com/downloads |
 | 4 | **Conta no GitHub** | Hospedar o repositório aberto | https://github.com |
 | 5 | **Visual Studio Code** | Editor | https://code.visualstudio.com |
@@ -37,7 +37,7 @@ Não precisa: Java/JDK, descompilador, TileZed/WorldEd (não vamos editar mapa) 
 
 ## 3. Passo a passo da instalação
 
-1. **Jogo e servidor.** Instale o Project Zomboid e o Dedicated Server pela Steam. Em Propriedades do jogo → Opções de inicialização, coloque `-debug` (libera o painel F11, o console de Lua e o comando `/reloadlua`).
+1. **Jogo e servidor.** Instale o Project Zomboid e o Dedicated Server pela Steam (o servidor fica escondido em "Ferramentas"; atalho no item 2 da tabela acima). Em Propriedades do jogo → Opções de inicialização, coloque `-debug` (libera o painel F11, o console de Lua e o comando `/reloadlua`).
 2. **Git.** Instale com as opções padrão e configure:
    ```bash
    git config --global user.name "Seu Nome"
