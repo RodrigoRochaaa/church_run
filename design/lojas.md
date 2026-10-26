@@ -1,207 +1,159 @@
-# church_run: catálogo das lojas por igreja (rascunho)
+# church_run: catálogo e preços das lojas (v0.2)
 
-Status: rascunho, base para a SPEC-041 (lojas e catálogo por igreja).
-Atualizado em: 2026-10-26.
+Status: rascunho, base para as specs SPEC-040 (moeda) e SPEC-041 (lojas).
+Atualizado em: 2026-10-26. Substitui a v0.1 (preços e ordem das cidades mudaram).
 Alvo: Project Zomboid Build 42.20+, multiplayer, servidor autoritativo.
+Contexto completo: [church_run_gdd.md](church_run_gdd.md), seção 6 (economia).
 
 ---
 
 ## 1. Regras
 
-1. **Catálogo cumulativo.** A loja da igreja N vende tudo das igrejas 1 a N, mais os itens novos de N.
-2. **Catálogo completo na Igreja 3.** Como combinado, as igrejas 4 e 5 não trazem itens novos. O que muda nelas é a dificuldade e as recompensas. Uma opção para pensar está na seção 5.
-3. **Lojas abertas por igreja vencida.** O jogador compra em qualquer igreja já conquistada pelo servidor. O catálogo é o da igreja mais alta vencida.
-4. **5 categorias, uma aba cada:** Armas, Defesa (proteção), Roupas, Remédios e Barricadas.
-5. **Preço fixo por item,** igual em todas as igrejas. O buff #41 Fiel da Casa dá −15%.
-6. **Compra validada no servidor:** ele confere o saldo de moedas, desconta, entrega o item e grava no log (tudo-ou-nada, como manda o CLAUDE.md).
-7. **IDs de itens validados na carga do servidor.** Um ID inexistente desativa só aquele item, com log, sem derrubar o mod (CLAUDE.md 3.4).
+1. **Todo zumbi dá 1 moeda**, dentro e fora do cerco (decidido). Recomendado: a moeda vai direto para a carteira virtual de quem matou (GDD, seção 6.1). Moedas só vêm de zumbis e de missões: não existe venda de itens para a loja.
+2. **Loja Básica desde o início.** A igreja de Rosewood (igreja 1) abre com a Loja Básica antes de ser conquistada, para as moedas terem uso desde o primeiro dia.
+3. **Catálogo cumulativo.** Vencer a igreja N libera o catálogo da igreja N, somado aos anteriores. O catálogo fica completo na igreja 3.
+4. **Igrejas 4 e 5:** sem itens novos. Proposta: vencer a 4 dá 10% de desconto em tudo e vencer a 5 dá 20%.
+5. **Comprar em qualquer igreja conquistada**, sempre com o catálogo mais alto já liberado no servidor.
+6. **5 abas:** Armas, Defesa, Roupas, Remédios, Barricadas. Há também os Serviços da seção 4.
+7. **Preço fixo por item.** O buff #41 Fiel da Casa dá −15%, somado ao desconto da igreja.
+8. **Compra validada no servidor:** ele confere o saldo, desconta, entrega o item e grava no log, tudo-ou-nada.
+9. **IDs validados na carga do servidor.** Um ID inexistente desativa só aquele item, com log.
 
-## 2. Economia de referência
+## 2. Como os preços foram calculados
 
-Hoje cada zumbi do cerco dá 1 moeda. Fora do cerco, a proposta (ainda não decidida) é 20% de chance.
+O modelo completo está no GDD. Resumo:
 
-| Igreja | Moedas por cerco, 1 jogador (aprox.) |
-| --- | --- |
-| 1 | 70 |
-| 2 | 140 |
-| 3 | 266 |
-| 4 | 310 |
-| 5 | ~400 |
+- Renda estimada de 1 jogador: cerca de 40 moedas por hora de jogo no começo, subindo até cerca de 120 com equipamento melhor, mais as moedas do cerco.
+- Entre duas igrejas, um jogador solo junta cerca de 235 moedas (depois da igreja 1), 345 (depois da 2) e 500 (depois da 3).
+- **Uma arma principal por etapa:** com o que junta, o jogador compra uma arma nova e o básico para o próximo cerco, mas não tudo. Escolher é parte do jogo.
+- **Atirar deve render um pouco mais do que custa.** A bala custa entre 0,4 e 0,8 moeda, e um zumbi costuma levar 1 a 2 balas. Armas de fogo ficam mais ou menos neutras em moedas, e o custo real delas é o barulho, que atrai mais zumbis.
+- Tamanho das caixas de munição assumido: 50 balas de pistola ou revólver, 24 cartuchos e 40 balas de fuzil. Se o B42 usar outro tamanho, o preço da caixa muda e o preço por bala fica o mesmo.
 
-Princípio dos preços: **a arma principal de cada igreja custa mais ou menos um cerco inteiro daquela igreja.** Munição e remédio custam pouco o bastante para o jogador gastar a cada cerco, e caro o bastante para ele não estocar.
+IDs de armas, munição, remédio e construção conferidos na lista do B42.20 ([gameserverkings](https://www.gameserverkings.com/knowledge-base/project-zomboid/project-zomboid-item-ids/), [pzfans](https://pzfans.com/item-weapons/)). Os de roupa e proteção são prováveis, com o nome conferido no B42.20.4 ([bamboogaming](https://www.bamboogaming.net/project-zomboid/clothing)). Os marcados **(confirmar)** precisam ser conferidos no `clothing.txt` do jogo.
+
+---
 
 ## 3. Catálogo
 
-IDs de armas, munição, remédio e construção conferidos na lista do B42.20 ([gameserverkings](https://www.gameserverkings.com/knowledge-base/project-zomboid/project-zomboid-item-ids/), [pzfans](https://pzfans.com/item-weapons/)). Os de roupas e proteção são os prováveis, com nome conferido no B42.20.4 ([bamboogaming](https://www.bamboogaming.net/project-zomboid/clothing)); os marcados com **(confirmar)** precisam ser conferidos no `clothing.txt` do jogo.
+### Loja Básica (aberta desde o início em Rosewood)
 
-### Igreja 1 · Rosewood (itens base)
+| Aba | Item | ID | Preço |
+| --- | --- | --- | --- |
+| Armas | Taco de beisebol | `Base.BaseballBat` | 25 |
+| Armas | Pé de cabra | `Base.Crowbar` | 40 |
+| Armas | Faca de caça | `Base.HuntingKnife` (confirmar) | 30 |
+| Remédios | Bandagem | `Base.Bandage` | 5 |
+| Remédios | Desinfetante | `Base.Disinfectant` | 15 |
+| Remédios | Analgésico | `Base.Pills` | 10 |
+| Barricadas | Tábua | `Base.Plank` | 4 |
+| Barricadas | Caixa de pregos | `Base.NailsBox` | 15 |
+| Barricadas | Martelo | `Base.Hammer` | 30 |
 
-**Armas**
+### Igreja 1 · Rosewood (acrescenta)
 
-| Item | ID | Preço |
+| Aba | Item | ID | Preço |
+| --- | --- | --- | --- |
+| Armas | Pistola M9 | `Base.Pistol` | 90 |
+| Armas | Pente de M9 | `Base.9mmClip` | 20 |
+| Armas | Caixa de 9 mm | `Base.Bullets9mmBox` | 20 |
+| Armas | Revólver SN38 | `Base.Revolver_Short` | 70 |
+| Armas | Caixa de .38 | `Base.Bullets38Box` | 20 |
+| Armas | Espingarda JS-2000 | `Base.Shotgun` | 160 |
+| Armas | Caixa de cartuchos 12 | `Base.ShotgunShellsBox` | 24 |
+| Armas | Rifle MSR700 (o mais fraco) | `Base.VarmintRifle` | 200 |
+| Armas | Caixa de 5,56 mm | `Base.556Box` | 20 |
+| Defesa | Colete à prova de balas civil | `Base.Vest_BulletCivilian` (confirmar) | 80 |
+| Defesa | Capacete de bicicleta | `Base.Hat_BicycleHelmet` (confirmar) | 20 |
+| Defesa | Caneleira | ID a confirmar (Shin Guard) | 30 |
+| Roupas | Jaqueta acolchoada | `Base.Jacket_Padded` (confirmar) | 50 |
+| Roupas | Calça acolchoada | `Base.Trousers_Padded` (confirmar) | 45 |
+| Roupas | Luvas de couro | `Base.Gloves_LeatherGloves` (confirmar) | 20 |
+| Remédios | Tala | `Base.Splint` | 15 |
+| Barricadas | Serrote | `Base.GardenSaw` | 30 |
+
+### Igreja 2 · March Ridge (acrescenta)
+
+| Aba | Item | ID | Preço |
+| --- | --- | --- | --- |
+| Armas | Pistola M1911 | `Base.Pistol2` | 120 |
+| Armas | Pente de M1911 | `Base.45Clip` | 25 |
+| Armas | Caixa de .45 | `Base.Bullets45Box` | 20 |
+| Armas | Revólver Patrol (.357) | `Base.Revolver` | 140 |
+| Armas | Caixa de .357 | `Base.Bullets357Box` | 30 |
+| Armas | Espingarda de cano duplo | `Base.DoubleBarrelShotgun` | 180 |
+| Armas | Machado de bombeiro | `Base.Axe` | 110 |
+| Armas | Machete | `Base.Machete` | 120 |
+| Armas | Taco de metal | `Base.BaseballBat_Metal` | 60 |
+| Armas | Lança curta | `Base.SpearShort` | 70 |
+| Defesa | Colete à prova de balas policial | `Base.Vest_BulletPolice` (confirmar) | 140 |
+| Defesa | Capacete de futebol americano | `Base.Hat_FootballHelmet` (confirmar) | 60 |
+| Defesa | Protetor de pescoço de couro | ID a confirmar (Leather Neck Guard) | 50 |
+| Roupas | Jaqueta de couro | `Base.Jacket_LeatherBlack` (confirmar) | 80 |
+| Roupas | Botas militares | `Base.Shoes_ArmyBoots` (confirmar) | 60 |
+| Remédios | Bandagem esterilizada | `Base.AlcoholBandage` | 12 |
+| Remédios | Antibióticos | `Base.Antibiotics` | 45 |
+| Remédios | Agulha de sutura | `Base.SutureNeedle` | 15 |
+| Remédios | Porta-agulha | `Base.SutureNeedleHolder` | 30 |
+| Barricadas | Chapa metálica pequena | `Base.SmallSheetMetal` | 25 |
+| Barricadas | Barra de aço | `Base.MetalBar` | 15 |
+| Barricadas | Serra de metal | `Base.Saw` | 35 |
+
+### Igreja 3 · Muldraugh (acrescenta e completa o catálogo)
+
+| Aba | Item | ID | Preço |
+| --- | --- | --- | --- |
+| Armas | Rifle MSR788 | `Base.HuntingRifle` | 300 |
+| Armas | Caixa de .308 | `Base.308Box` | 32 |
+| Armas | Pistola B-F (.44) | `Base.Pistol3` | 260 |
+| Armas | Pente de B-F | `Base.44Clip` | 30 |
+| Armas | Caixa de .44 | `Base.Bullets44Box` | 30 |
+| Armas | Revólver Magnum (.44) | `Base.Revolver_Long` | 280 |
+| Armas | Fuzil M16 | `Base.AssaultRifle` | 480 |
+| Armas | Pente de M16 | `Base.556Clip` | 40 |
+| Armas | Espingarda tática JS-3T | `Base.JS3T_Shotgun` | 380 |
+| Armas | Katana | `Base.Katana` | 320 |
+| Defesa | Colete à prova de balas militar | `Base.Vest_BulletArmy` (confirmar) | 260 |
+| Defesa | Capacete antimotim | `Base.Hat_RiotHelmet` (confirmar) | 180 |
+| Defesa | Ombreira de metal articulada | ID a confirmar (Articulated Metal Shoulder Armor) | 150 |
+| Defesa | Caneleira de metal articulada | ID a confirmar (Articulated Metal Shin Armor) | 140 |
+| Defesa | Protetor de pescoço de metal | ID a confirmar (Metal Neck Guard) | 120 |
+| Roupas | Jaqueta de bombeiro | `Base.Jacket_Fireman` (confirmar) | 160 |
+| Roupas | Calça de bombeiro | `Base.Trousers_Fireman` (confirmar) | 130 |
+| Roupas | Jaqueta militar | `Base.Jacket_ArmyCamoGreen` (confirmar) | 110 |
+| Roupas | Calça militar | `Base.Trousers_ArmyService` (confirmar) | 100 |
+| Remédios | Pinça | `Base.Tweezers` (confirmar) | 20 |
+| Remédios | Lenços com álcool | `Base.AlcoholWipes` (confirmar) | 8 |
+| Remédios | Kit de primeiros socorros do mod (4 bandagens esterilizadas, 1 desinfetante, 1 tala, 1 analgésico) | item próprio do mod | 90 |
+| Barricadas | Chapa metálica | `Base.SheetMetal` | 45 |
+| Barricadas | Maçarico | `Base.BlowTorch` | 150 |
+| Barricadas | Varetas de solda | `Base.WeldingRods` | 30 |
+| Barricadas | Máscara de solda | `Base.WeldingMask` (confirmar) | 70 |
+| Barricadas | Arame farpado | `Base.BarbedWire` (confirmar) | 35 |
+
+### Igrejas 4 · West Point e 5 · Louisville
+
+Catálogo igual ao da igreja 3. Vencer a 4 dá 10% de desconto em toda a loja, e vencer a 5 dá 20% (proposta).
+
+## 4. Serviços da igreja (drenos de moedas)
+
+| Serviço | Preço | Observação |
 | --- | --- | --- |
-| Pistola M9 | `Base.Pistol` | 60 |
-| Pente de M9 | `Base.9mmClip` | 15 |
-| Caixa de munição 9 mm | `Base.Bullets9mmBox` | 12 |
-| Espingarda JS-2000 | `Base.Shotgun` | 110 |
-| Caixa de cartuchos 12 | `Base.ShotgunShellsBox` | 18 |
-| Rifle MSR700 (o mais fraco) | `Base.VarmintRifle` | 140 |
-| Caixa de munição 5,56 mm | `Base.556Box` | 22 |
-| Taco de beisebol | `Base.BaseballBat` | 15 |
-| Pé de cabra | `Base.Crowbar` | 25 |
+| Teleporte entre igrejas conquistadas | 10 por salto | Regras no GDD, seção 3.3 |
+| Conserto de arma no altar | 20% do preço de loja da arma | Restaura a condição. Armas que não estão na loja pagam pela tabela de categoria (definir na spec) |
+| Reroll extra de buff | 15 × número da igreja | Além do reroll grátis de cada oferta |
 
-**Defesa**
+## 5. Totais
 
-| Item | ID | Preço |
+| Etapa | Itens novos | Catálogo acumulado |
 | --- | --- | --- |
-| Colete à prova de balas civil | `Base.Vest_BulletCivilian` (confirmar) | 50 |
-| Capacete de bicicleta | `Base.Hat_BicycleHelmet` (confirmar) | 15 |
-| Caneleira | `Base.ShinGuard_L` / `_R` (confirmar) | 20 |
+| Loja Básica | 9 | 9 |
+| Igreja 1 | 17 | 26 |
+| Igreja 2 | 22 | 48 |
+| Igreja 3 | 27 | 75 |
+| Igrejas 4 e 5 | 0 | 75 |
 
-**Roupas**
+## 6. Para conferir no playtest
 
-| Item | ID | Preço |
-| --- | --- | --- |
-| Jaqueta acolchoada | `Base.Jacket_Padded` (confirmar) | 35 |
-| Calça acolchoada | `Base.Trousers_Padded` (confirmar) | 30 |
-| Luvas de couro | `Base.Gloves_LeatherGloves` (confirmar) | 15 |
-
-**Remédios**
-
-| Item | ID | Preço |
-| --- | --- | --- |
-| Bandagem | `Base.Bandage` | 4 |
-| Desinfetante | `Base.Disinfectant` | 8 |
-| Analgésico | `Base.Pills` | 8 |
-| Tala | `Base.Splint` | 10 |
-
-**Barricadas**
-
-| Item | ID | Preço |
-| --- | --- | --- |
-| Tábua | `Base.Plank` | 3 |
-| Caixa de pregos | `Base.NailsBox` | 10 |
-| Martelo | `Base.Hammer` | 15 |
-| Serrote | `Base.GardenSaw` | 15 |
-
-### Igreja 2 · Riverside (acrescenta)
-
-**Armas**
-
-| Item | ID | Preço |
-| --- | --- | --- |
-| Pistola M1911 | `Base.Pistol2` | 90 |
-| Pente de M1911 | `Base.45Clip` | 18 |
-| Caixa de munição .45 | `Base.Bullets45Box` | 15 |
-| Revólver Patrol (.357) | `Base.Revolver` | 100 |
-| Caixa de munição .357 | `Base.Bullets357Box` | 18 |
-| Espingarda de cano duplo | `Base.DoubleBarrelShotgun` | 130 |
-| Machado de bombeiro | `Base.Axe` | 70 |
-| Machete | `Base.Machete` | 80 |
-| Taco de metal | `Base.BaseballBat_Metal` | 40 |
-
-**Defesa**
-
-| Item | ID | Preço |
-| --- | --- | --- |
-| Colete à prova de balas policial | `Base.Vest_BulletPolice` (confirmar) | 90 |
-| Capacete de futebol americano | `Base.Hat_FootballHelmet` (confirmar) | 40 |
-| Protetor de pescoço de couro | ID a confirmar (Leather Neck Guard) | 35 |
-
-**Roupas**
-
-| Item | ID | Preço |
-| --- | --- | --- |
-| Jaqueta de couro | `Base.Jacket_LeatherBlack` (confirmar) | 60 |
-| Botas militares | `Base.Shoes_ArmyBoots` (confirmar) | 40 |
-
-**Remédios**
-
-| Item | ID | Preço |
-| --- | --- | --- |
-| Bandagem esterilizada | `Base.AlcoholBandage` | 8 |
-| Antibióticos | `Base.Antibiotics` | 25 |
-| Agulha de sutura | `Base.SutureNeedle` | 12 |
-| Porta-agulha | `Base.SutureNeedleHolder` | 20 |
-
-**Barricadas**
-
-| Item | ID | Preço |
-| --- | --- | --- |
-| Chapa metálica pequena | `Base.SmallSheetMetal` | 12 |
-| Barra de aço | `Base.MetalBar` | 10 |
-| Serra de metal | `Base.Saw` | 20 |
-
-### Igreja 3 · West Point (acrescenta e completa o catálogo)
-
-**Armas**
-
-| Item | ID | Preço |
-| --- | --- | --- |
-| Rifle MSR788 | `Base.HuntingRifle` | 230 |
-| Caixa de munição .308 | `Base.308Box` | 30 |
-| Pistola B-F (.44) | `Base.Pistol3` | 180 |
-| Pente de B-F | `Base.44Clip` | 25 |
-| Caixa de munição .44 | `Base.Bullets44Box` | 22 |
-| Fuzil M16 | `Base.AssaultRifle` | 350 |
-| Pente de M16 | `Base.556Clip` | 35 |
-| Espingarda tática JS-3T | `Base.JS3T_Shotgun` | 260 |
-| Katana | `Base.Katana` | 250 |
-
-**Defesa**
-
-| Item | ID | Preço |
-| --- | --- | --- |
-| Colete à prova de balas militar | `Base.Vest_BulletArmy` (confirmar) | 160 |
-| Capacete antimotim | `Base.Hat_RiotHelmet` (confirmar) | 120 |
-| Ombreira de metal articulada | ID a confirmar (Articulated Metal Shoulder Armor) | 90 |
-| Caneleira de metal articulada | ID a confirmar (Articulated Metal Shin Armor) | 80 |
-| Protetor de pescoço de metal | ID a confirmar (Metal Neck Guard) | 70 |
-
-**Roupas**
-
-| Item | ID | Preço |
-| --- | --- | --- |
-| Jaqueta de bombeiro | `Base.Jacket_Fireman` (confirmar) | 110 |
-| Calça de bombeiro | `Base.Trousers_Fireman` (confirmar) | 90 |
-| Jaqueta militar | `Base.Jacket_ArmyCamoGreen` (confirmar) | 80 |
-| Calça militar | `Base.Trousers_ArmyService` (confirmar) | 70 |
-
-**Remédios**
-
-| Item | ID | Preço |
-| --- | --- | --- |
-| Pinça | `Base.Tweezers` (confirmar) | 15 |
-| Lenços com álcool | `Base.AlcoholWipes` (confirmar) | 6 |
-| Kit de primeiros socorros (pacote do mod: 4 bandagens esterilizadas, 1 desinfetante, 1 tala, 1 analgésico) | item próprio do mod | 60 |
-
-**Barricadas**
-
-| Item | ID | Preço |
-| --- | --- | --- |
-| Chapa metálica | `Base.SheetMetal` | 25 |
-| Maçarico | `Base.BlowTorch` | 70 |
-| Varetas de solda | `Base.WeldingRods` | 15 |
-| Máscara de solda | `Base.WeldingMask` (confirmar) | 40 |
-| Arame farpado | `Base.BarbedWire` (confirmar) | 20 |
-
-### Igrejas 4 · Muldraugh e 5 · Louisville
-
-Catálogo igual ao da Igreja 3. Nenhum item novo.
-
-## 4. Totais por igreja
-
-| Igreja | Itens novos | Catálogo acumulado |
-| --- | --- | --- |
-| 1 | 23 | 23 |
-| 2 | 21 | 44 |
-| 3 | 26 | 70 |
-| 4 | 0 | 70 |
-| 5 | 0 | 70 |
-
-## 5. Pontos para decidir
-
-1. **Igrejas 4 e 5 sem itens novos.** Pode faltar motivação para chegar à 5. Duas opções sem quebrar a regra: (a) a Igreja 4 desconta 10% e a 5 desconta 20% em toda a loja; (b) duas peças "relíquia", só para quem vencer a 5 (ex.: fuzil M1A `Base.AssaultRifle2` e uma armadura de placas). Recomendo (a).
-2. **Munição pesa na economia.** Com 70 moedas na Igreja 1, comprar a pistola (60) deixa pouco para munição. Isso é intencional (preço alto), mas vale testar se o jogador consegue vencer a Igreja 2 só com o que comprou na 1.
-3. **Estoque.** Hoje a loja é infinita. Dá para limitar a quantidade por cerco (ex.: 2 armas de fogo por jogador por cerco), se as armas ficarem fáceis demais de acumular no grupo.
-4. **Itens marcados (confirmar):** antes de aprovar a spec, conferir cada ID no `media/scripts/generated/items/clothing.txt` do B42.20.
+1. Com cerca de 235 moedas depois da igreja 1, o jogador consegue M9 + 3 caixas + remédios, ou a JS-2000 + 2 caixas. Ele precisa vencer a igreja 2 com isso.
+2. Se a renda fora do cerco for muito maior que 40 a 120 moedas por hora (ex.: farmar horda com arma), subir todos os preços por um multiplicador nas opções de sandbox, e não item a item.
+3. Limite de estoque, se o grupo acumular armas demais: por exemplo, no máximo 2 armas de fogo por jogador a cada cerco.
