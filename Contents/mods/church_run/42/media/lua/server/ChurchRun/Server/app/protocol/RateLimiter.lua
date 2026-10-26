@@ -5,6 +5,14 @@ RateLimiter.__index = RateLimiter
 
 local MS_PER_SECOND = 1000
 
+-- O Kahlua do B42 não tem next (CLAUDE.md §6.2), então a tabela vazia é conferida com pairs.
+local function isEmpty(tbl)
+    for _ in pairs(tbl) do
+        return false
+    end
+    return true
+end
+
 function RateLimiter.new()
     return setmetatable({ buckets = {} }, RateLimiter)
 end
@@ -50,7 +58,7 @@ function RateLimiter:sweep(now)
         for _, command in ipairs(fullBuckets) do
             userBuckets[command] = nil
         end
-        if next(userBuckets) == nil then
+        if isEmpty(userBuckets) then
             emptyUsers[#emptyUsers + 1] = user
         end
     end
