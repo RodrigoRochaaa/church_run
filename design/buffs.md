@@ -30,7 +30,7 @@ São 81 candidatos. A versão final do mod usa 30, escolhidos pelo Rodrigo.
 
 ## 2. Regra de reroll
 
-1. **1 reroll por oferta.** Em cada oferta, o jogador pode trocar as 3 opções por outras 3, uma vez, antes de escolher.
+1. **1 reroll grátis por oferta** (decidido, GDD §1.2). Em cada oferta, o jogador pode trocar as 3 opções por outras 3, de graça, uma vez, antes de escolher. Rerolls extras custam 15 × N moedas, sendo N o número da igreja (GDD §6.5), e fichas de reroll também saem do contrato Vigília (GDD §7.2).
 2. **O que sai volta.** As 3 opções descartadas voltam para a lista, mas não aparecem de novo no mesmo reroll. Se não houver 3 buffs novos disponíveis, o reroll mostra os que existirem.
 3. **Não acumula.** Reroll não usado numa oferta não passa para a próxima.
 4. **Depois do reroll, escolher é obrigatório.** Não há voltar para as opções anteriores.
@@ -38,8 +38,6 @@ São 81 candidatos. A versão final do mod usa 30, escolhidos pelo Rodrigo.
    - **#53 Novo Sorteio:** +1 reroll em cada oferta (passa a 2 por oferta).
    - **#52 Sorte do Peregrino:** a próxima oferta mostra 4 opções em vez de 3.
 6. **Segurança.** O servidor guarda quantos rerolls cada oferta já usou. Um pedido repetido ou fora da oferta ativa é recusado e registrado no log (idempotência e rate limit, como manda o CLAUDE.md).
-
-Decisão em aberto: o reroll poderia custar moedas (ex.: 10 na Igreja 1, subindo por igreja) em vez de ser grátis. A proposta atual é 1 grátis por oferta.
 
 ---
 

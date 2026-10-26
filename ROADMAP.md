@@ -14,9 +14,9 @@ Atualizado em: 26/10/2026.
 
 | Passo | O que entrega | Depende de | Referência | Status |
 | --- | --- | --- | --- | --- |
-| P00 | Repositório no GitHub, ambiente do `DEPENDENCIES.md`, esqueleto de pastas e `mod.info` do church_run carregando sem erro | Rodrigo criar o repositório | `DEPENDENCIES.md`, `CONTEXT.md` §5 | aguardando Rodrigo |
-| P01 | Decisões em aberto fechadas: ADR-002 (progressão global) e ADR-003 (licença e dependências) | — | GDD §14 | aguardando Rodrigo |
-| P02 | Protocolo de comandos e persistência; ida e volta cliente/servidor funcionando | P00 | SPEC-001, SPEC-002 | pendente |
+| P00 | Repositório no GitHub, ambiente do `DEPENDENCIES.md`, esqueleto de pastas e `mod.info` do church_run carregando sem erro | — | `DEPENDENCIES.md`, `CONTEXT.md` §5 | aguardando teste: repositório, CI, esqueleto e `mod.info` feitos em 26/10/2026; falta o Rodrigo ver o mod na lista do jogo sem erro e instalar o Dedicated Server |
+| P01 | Decisões em aberto fechadas: ADR-002 (progressão global) e ADR-003 (licença e dependências) | — | GDD §14, ADR-002, ADR-003 | concluído (26/10/2026) |
+| P02 | Protocolo de comandos e persistência; ida e volta cliente/servidor funcionando | P00 | SPEC-001, SPEC-002 | aguardando Rodrigo: SPEC-001 e SPEC-002 em rascunho, para aprovar |
 
 ## Fase 1 · Igreja 1 jogável (Rosewood)
 
@@ -28,7 +28,8 @@ Meta: dois jogadores conquistam Rosewood num servidor dedicado.
 | P04 | Prova técnica: gerar zumbis em pontos fixos a 40–60 tiles e mandá-los até a porta; medir o raio da área carregada | P02 | GDD §4.3, §12 | pendente |
 | P05 | Prova técnica: painel fixo à esquerda e símbolo no mapa | P02 | GDD §9, §12 | pendente |
 | P06 | Dados da igreja de Rosewood: altar, raio, 6 a 10 âncoras, ponto de nascimento (roteiro do Claude, coleta do Rodrigo no modo debug) | P00 | SPEC-010 | pendente |
-| P07 | Cerco: estados, votação, participantes, gerador de zumbis e ondas da igreja 1 | P04, P06 | SPEC-020, 021, 022 | pendente |
+| P06a | Kit do Peregrino: mochila básica com taco e 3 bandagens no personagem novo; enquanto Rosewood não for conquistada, a mochila traz a relíquia de Rosewood. As 30 moedas do kit entram com o P13 | P02 | SPEC-011 (kit no nascimento), SPEC-020 (altar com relíquia), GDD §11.1. VERIFICAR B42: item dado pelo servidor aparece no cliente sem sincronização extra | pendente |
+| P07 | Cerco: estados, votação, participantes, gerador de zumbis e ondas da igreja 1 | P04, P06, P06a | SPEC-020, 021, 022 | pendente |
 | P08 | Morte no cerco e sala de espera | P03, P07 | SPEC-030 | pendente |
 | P09 | Nascimento pela igreja conquistada mais recente | P03, P07 | SPEC-011 | pendente |
 | P10 | HUD mínimo: onda e tempo | P05, P07 | SPEC-060 (parte) | pendente |
@@ -65,7 +66,7 @@ Meta: dois jogadores conquistam Rosewood num servidor dedicado.
 | P21 | Base dos zumbis especiais + Corredor | P20 | SPEC-070, GDD §5.3 | pendente |
 | P22 | Dados, ondas e catálogos de March Ridge, Muldraugh, West Point e Louisville | P11, P14, P21 | SPEC-010, SPEC-022, `design/lojas.md` | pendente |
 | P23 | Teleporte entre igrejas conquistadas | P03, P14 | SPEC-012, GDD §2.2 | pendente |
-| P24 | Campanha por cidade: peregrinação, relíquia e cerco (se o Rodrigo aprovar missões na v1) | P22 + decisão do Rodrigo | SPEC-080, GDD §7.1 | aguardando Rodrigo |
+| P24 | Campanha por cidade: relíquia escondida da igreja 2 em diante (decidido em 26/10/2026); peregrinação e preparação só se o Rodrigo aprovar (GDD §14.9) | P22, P19 | SPEC-080, GDD §7.1 | pendente (a parte de peregrinação e preparação aguarda o Rodrigo) |
 
 ## Fase 6 · Zumbis especiais
 

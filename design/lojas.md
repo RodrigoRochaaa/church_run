@@ -138,7 +138,7 @@ Catálogo igual ao da igreja 3. Vencer a 4 dá 10% de desconto em toda a loja, e
 
 | Serviço | Preço | Observação |
 | --- | --- | --- |
-| Teleporte entre igrejas conquistadas | 10 por salto | Regras no GDD, seção 3.3 |
+| Teleporte entre igrejas conquistadas | 10 por salto | Regras no GDD, seção 2.2 |
 | Conserto de arma no altar | 20% do preço de loja da arma | Restaura a condição. Armas que não estão na loja pagam pela tabela de categoria (definir na spec) |
 | Reroll extra de buff | 15 × número da igreja | Além do reroll grátis de cada oferta |
 

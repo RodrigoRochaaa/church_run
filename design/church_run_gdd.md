@@ -37,6 +37,10 @@ Um grupo atravessa Knox Country de sul a norte conquistando 5 igrejas. Cada conq
 | 2026-10-26 | Buffs: oferta de 3, sem repetir, perdidos na morte, 1 reroll grátis por oferta |
 | 2026-10-26 | Catálogo das lojas cumulativo e completo na igreja 3 |
 | 2026-10-26 | Igrejas conquistadas viram pontos de teleporte entre si |
+| 2026-10-26 | ID do mod `church_run` e namespace do código `ChurchRun` ([ADR-004](../specs/decisions/ADR-004-id-e-namespace.md)) |
+| 2026-10-26 | Licença: MIT para o código e CC BY 4.0 para a arte ([ADR-003](../specs/decisions/ADR-003-licenca.md)) |
+| 2026-10-26 | Kit do Peregrino numa mochila básica, já na Fase 1. Enquanto Rosewood não for conquistada, a mochila traz a relíquia de Rosewood |
+| 2026-10-26 | Da igreja 2 em diante, a relíquia é escondida e precisa ser achada (seção 7.1) |
 
 ---
 
@@ -102,7 +106,7 @@ Pausa = 2 min de preparo. Fórmula de cada minuto: **zumbis = 4 × nível + 2** 
 
 ### 4.1 Iniciar
 
-1. O cerco só começa com a **relíquia** da cidade colocada no altar (missão da seção 7).
+1. O cerco só começa com a **relíquia** da cidade colocada no altar. A de Rosewood vem na mochila do Kit do Peregrino (seção 11); da igreja 2 em diante, ela é achada na missão da seção 7.1.
 2. **Votação:** quem ativa o altar abre uma votação de 30 s. O cerco começa se a maioria dos jogadores online a até 30 tiles do altar aceitar.
 3. **Participantes:** todo jogador a até 30 tiles do altar no início entra na lista de participantes. Só eles ficam sujeitos à regra de morte do cerco.
 4. **Preparo:** 60 s antes da primeira onda, com aviso na HUD.
@@ -311,7 +315,7 @@ O church_run nasceu como gerador de missões. A conquista das igrejas é a campa
 | Passo | Missão | Tipo de objetivo | Recompensa |
 | --- | --- | --- | --- |
 | 1 | **Peregrinação:** chegar à igreja da cidade. O ícone "?" dela aparece no mapa quando a anterior é conquistada | `visit` | 20 × N moedas |
-| 2 | **Relíquia:** o servidor esconde a relíquia da cidade num contêiner de um prédio sorteado. O mapa marca um círculo de 60 tiles | `collect` (item do mod) | Libera o altar |
+| 2 | **Relíquia** (da igreja 2 em diante; a de Rosewood vem no Kit do Peregrino): o servidor esconde a relíquia da cidade num contêiner de um prédio sorteado. O mapa marca um círculo de 60 tiles | `collect` (item do mod) | Libera o altar |
 | 3 | **Preparação (opcional):** entregar 20 tábuas e 1 caixa de pregos no altar | `deliver` | +60 s de preparo e +1 âncora pulada na 1ª onda |
 | 4 | **Cerco:** sobreviver às ondas | `survive` | Conquista, buffs e 50 × N moedas |
 
@@ -384,7 +388,7 @@ Tudo que é número de balanceamento vira opção, porque um mod aberto vai roda
 
 ## 11. Outras melhorias propostas
 
-1. **Kit do Peregrino:** todo personagem novo nasce com taco, 3 bandagens e 30 moedas. Quem entra num servidor com 3 igrejas já conquistadas não fica inútil.
+1. **Kit do Peregrino** (decidido; entra na Fase 1): todo personagem novo nasce com uma mochila básica com taco e 3 bandagens, mais 30 moedas. Enquanto Rosewood não for conquistada, a mochila traz também a relíquia de Rosewood. Quem entra num servidor com 3 igrejas já conquistadas não fica inútil.
 2. **Votação e participantes no cerco** (seção 4.1), para que um jogador não prenda os outros na regra de morte sem querer.
 3. **Carteira virtual** (seção 6.1).
 4. **Placar** no altar, para competição amigável no grupo.
@@ -436,7 +440,7 @@ Tudo que é número de balanceamento vira opção, porque um mod aberto vai roda
 6. Contra-ataques às igrejas: ligados ou desligados por padrão.
 7. O Bispo como chefe final.
 8. Os 30 buffs finais.
-9. Campanha por cidade (peregrinação, relíquia) e mural de contratos: entram na v1 ou ficam para depois da 1.0? O `CONTEXT.md` previa missões fora da v1; o ROADMAP deixa a campanha no fim da Fase 5 e o mural depois da 1.0.
+9. Campanha por cidade (peregrinação e preparação) e mural de contratos: entram na v1 ou ficam para depois da 1.0? A relíquia já está decidida: vem no Kit do Peregrino em Rosewood e é achada da igreja 2 em diante (seção 1.2). O ROADMAP deixa o resto da campanha no fim da Fase 5 e o mural depois da 1.0.
 
 ---
 
