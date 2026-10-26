@@ -61,9 +61,9 @@ Não precisa: Java/JDK, descompilador, TileZed/WorldEd (não vamos editar mapa) 
    No Linux nativo os comandos são os mesmos. No macOS: `brew install lua@5.1 luarocks` (VERIFICAR fórmula) e os mesmos `luarocks install`.
 8. **Ligar o repositório ao jogo** sem copiar arquivos. No Prompt de Comando (não PowerShell):
    ```bat
-   mklink /J "%USERPROFILE%\Zomboid\Workshop\church_run" "C:\dev\church_run"
+   mklink /J "%USERPROFILE%\Zomboid\mods\church_run" "C:\dev\church_run\Contents\mods\church_run"
    ```
-   O mod aparece no menu Mods do jogo como "Church Run". Tudo que você salvar no VS Code o jogo lê ao reiniciar (Lua também com `/reloadlua`; scripts de item só reiniciando o jogo). No Linux: `ln -s ~/dev/church_run ~/Zomboid/Workshop/church_run`.
+   O link vai em `Zomboid\mods`, e não em `Zomboid\Workshop`, porque o servidor dedicado só procura mods locais em `Zomboid\mods` (conferido em 26/10/2026 no 42.21.0: com o link no Workshop, o servidor registra `required mod "church_run" not found`). O jogo também lê essa pasta. O link do Workshop só é preciso para publicar (Fase 7). O mod aparece no menu Mods do jogo como "Church Run". Tudo que você salvar no VS Code o jogo lê ao reiniciar (Lua também com `/reloadlua`; scripts de item só reiniciando o jogo). O jogo lê a branch que estiver aberta no repositório: para testar um PR, faça checkout da branch dele antes. No Linux: `ln -s ~/dev/church_run/Contents/mods/church_run ~/Zomboid/mods/church_run`.
 
 ## 4. Arquivos de configuração (na raiz do repositório)
 
@@ -91,10 +91,10 @@ start ProjectZomboid64.exe -nosteam
 O caminho acima é o da biblioteca Steam padrão; troque pelo da sua (Steam → Configurações → Armazenamento). Na primeira janela, Hospedar → configurações → Mods → adicionar Church Run → iniciar. Na segunda, Entrar com outro nome de usuário, IP e porta padrão. Atenção: no host o Lua de cliente e de servidor rodam juntos, então esse teste **não** substitui o B.
 
 **B. Real (servidor dedicado + 2 clientes)**: é o item 1 do checklist de MP.
-1. Rode `StartServer64.bat` (pasta do Dedicated Server) uma vez para gerar `%USERPROFILE%\Zomboid\Server\servertest.ini`.
-2. No `.ini`: `Mods=\church_run` (no B42 o ID leva `\` antes) e `WorkshopItems=` vazio, já que o mod é local. Reinicie o servidor.
-3. Abra dois clientes com `-nosteam` e entre em `127.0.0.1`, porta padrão.
-4. Logs: `%USERPROFILE%\Zomboid\console.txt` (cliente) e a janela/log do servidor. VERIFICAR se o servidor dedicado lê mods locais de `Zomboid\Workshop` ou só de `Zomboid\mods`; se for o segundo, crie outro link para `Contents\mods\church_run`.
+1. Suba o servidor de teste com `tools\start-dev-server.bat "<pasta do Dedicated Server>"` (ex.: `"D:\apps de jogo\steamapps\common\Project Zomboid Dedicated Server"`). Ele roda sem Steam, com o nome `churchrun_dev`, para não mexer no `servertest` que o "Hospedar" do jogo usa. Não use o `StartServer64.bat` da Steam: ele reserva 16 GB de memória (toda a RAM de um PC de 16 GB) e só repassa dois argumentos. Na primeira vez, o servidor pede uma senha de administrador no console.
+2. A config fica em `%USERPROFILE%\Zomboid\Server\churchrun_dev.ini`, com `Mods=\church_run` (no B42 o ID leva `\` antes) e `WorkshopItems=` vazio, já que o mod é local. Se o arquivo não existir, crie-o só com essas duas linhas: o servidor completa o resto na primeira subida.
+3. Espere o `*** SERVER STARTED ****` no console. Abra dois clientes com `-nosteam` e entre em `127.0.0.1`, porta padrão.
+4. Logs: `%USERPROFILE%\Zomboid\console.txt` (cliente) e o console do servidor. Para desligar salvando o mundo e a Global ModData, digite `quit` no console do servidor.
 
 ## 6. Ordem recomendada
 
