@@ -1,7 +1,7 @@
 # SPEC-002 Persistência
 
 - **Status:** implementada em 26/10/2026 (branch `spec-002-persistencia`), aguardando o teste no jogo do PR. Aprovada no mesmo dia com as respostas recomendadas às questões em aberto (backup antes de migrar; single player com a mesma persistência), sob a autonomia dada pelo Rodrigo
-- **Versão mínima do jogo testada:** — (API conferida no código do 42.21.0 em 26/10/2026; nada testado no jogo ainda)
+- **Versão mínima do jogo testada:** 42.21.0, no servidor dedicado (26/10/2026). Primeira subida: `storage.created` e `storage.loaded bootCount=1` (CA1). Depois de `quit` e nova subida: `bootCount=2` com o mesmo `createdAtMs` (CA2). Nenhum erro de Lua. Os casos com cliente (CA10, CA11) esperam o teste do Rodrigo.
 - **Fase:** 0 (`CONTEXT.md` §6)
 - **ADRs ligadas:** [ADR-001](decisions/ADR-001-servidor-autoritativo.md), [ADR-002](decisions/ADR-002-progressao-global.md), [ADR-004](decisions/ADR-004-id-e-namespace.md)
 - **Depende de:** [SPEC-001](001-protocolo-comandos.md) (motivo `serverDataUnavailable` no `rejected`)
@@ -71,7 +71,7 @@ Eventos: `storage.created`, `storage.loaded` (versão, `bootCount`, `createdAtMs
 
 | Uso | API | Conferido |
 |---|---|---|
-| Carregar no início do servidor | `Events.OnInitGlobalModData`, callback `(newGame)` | Umbrella 42.21.0; usado pelo vanilla no servidor (`ProfessionVehicles.lua`). VERIFICAR B42 se dispara antes de o primeiro jogador entrar |
+| Carregar no início do servidor | `Events.OnInitGlobalModData`, callback `(newGame)` | Umbrella 42.21.0; usado pelo vanilla no servidor (`ProfessionVehicles.lua`). Conferido no servidor dedicado 42.21.0: o `storage.loaded` sai antes do `*** SERVER STARTED ****`, ou seja, antes de qualquer jogador entrar |
 | Abrir a tabela viva de uma chave | `ModData.getOrCreate(tag)` | Umbrella 42.21.0 e Lua vanilla do 42.21.0 |
 | Substituir o conteúdo na migração | Limpar e copiar na própria tabela, sem `ModData.add` | Escolha para usar só a API que o vanilla usa |
 | Relógio real | `getTimestampMs()` | Umbrella 42.21.0 |
