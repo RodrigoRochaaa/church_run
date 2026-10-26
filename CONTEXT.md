@@ -104,7 +104,7 @@ church_run/                                # raiz do repositório = item do Work
   tools/                                   # lint, empacotar, checar "API do jogo fora de adapters/"
 ```
 
-Por que a raiz do repositório é o item do Workshop: o jogo procura mods em `C:\Users\<você>\Zomboid\Workshop\<Item>\Contents\mods\...`. Com um link (junction) dessa pasta para o repositório, você edita no VS Code e o jogo lê na hora, sem copiar arquivos. O passo a passo está no `DEPENDENCIES.md`.
+Por que a raiz do repositório é o item do Workshop: o envio para a Oficina parte de `C:\Users\<você>\Zomboid\Workshop\<Item>\Contents\mods\...`, então o repositório já tem esse formato (link no Workshop só na publicação, Fase 7). Para desenvolver, um link (junction) de `Zomboid\mods\church_run` para `Contents\mods\church_run` deixa o jogo e o servidor dedicado lerem o que você salva no VS Code, sem copiar arquivos. O passo a passo está no `DEPENDENCIES.md`.
 
 ## 6. Prioridades e fases
 

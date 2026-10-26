@@ -1,7 +1,7 @@
 # SPEC-001 Protocolo de comandos
 
 - **Status:** implementada em 26/10/2026 (branch `spec-001-protocolo`), aguardando o teste no jogo do PR. Aprovada no mesmo dia com as respostas recomendadas às questões em aberto (single player suportado; limites ajustáveis numa spec futura), sob a autonomia dada pelo Rodrigo
-- **Versão mínima do jogo testada:** — (API conferida no código do 42.21.0 em 26/10/2026; nada testado no jogo ainda)
+- **Versão mínima do jogo testada:** 42.21.0, só no servidor dedicado (26/10/2026): o mod carrega, o catálogo passa na conferência no Kahlua e o servidor registra `serverReady`, sem erro de Lua. O lado do cliente (ping, pong, aviso de versão) espera o teste do Rodrigo.
 - **Fase:** 0 (`CONTEXT.md` §6)
 - **ADRs ligadas:** [ADR-001](decisions/ADR-001-servidor-autoritativo.md), [ADR-004](decisions/ADR-004-id-e-namespace.md)
 - **Depende de:** —

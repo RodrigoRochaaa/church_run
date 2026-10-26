@@ -4,42 +4,61 @@
 > O histórico completo fica no Git: `git log -p -- JOURNAL.md`. Por isso, ao fim da sessão, o journal novo é commitado.
 
 **Data:** 26/10/2026
-**Sessão:** Documentos novos (GDD, ROADMAP, GUIA) organizados e alinhados
-**Fase atual:** Fase 0 (Fundação), em andamento. No `ROADMAP.md`: P00 aguardando teste, P01 concluído, P02 aguardando Rodrigo.
+**Sessão:** P02: SPEC-001 e SPEC-002 aprovadas e implementadas, com a autonomia dada pelo Rodrigo
+**Fase atual:** Fase 0 (Fundação), em andamento. No `ROADMAP.md`: P00 aguardando teste, P01 concluído, P02 aguardando teste (PRs #1 e #2).
 
 ## Próximo passo
 
-1. **P00 (Rodrigo):** abrir o jogo e conferir que "Church Run" aparece na lista de mods sem erro no `%USERPROFILE%\Zomboid\console.txt`; instalar o Project Zomboid Dedicated Server (Steam → Biblioteca → Ferramentas). Isso fecha o P00.
-2. **P02 (Rodrigo):** aprovar ou ajustar `specs/001-protocolo-comandos.md` e `specs/002-persistencia.md`, respondendo às "Questões em aberto" de cada uma.
-3. **Claude, assim que o P00 fechar:** escrever o roteiro de coleta do P06 (altar, raio, 6 a 10 âncoras e ponto de nascimento de Rosewood, SPEC-010), pelo `GUIA-CLAUDE.md` §2 "Dados do mapa". É o primeiro passo desbloqueado enquanto as specs esperam aprovação.
+1. **P00 (Rodrigo):** abrir o jogo e conferir que "Church Run" aparece na lista de mods sem erro no `%USERPROFILE%\Zomboid\console.txt`; instalar o Project Zomboid Dedicated Server (Steam → Biblioteca → Ferramentas).
+2. **P02 (Rodrigo):** rodar o checklist "Teste no jogo" do PR #1 e depois o do PR #2 (cerca de 10 min cada). Se passar: mesclar o #1 e depois o #2 (a base do #2 muda sozinha para a `main`), escrever "42.21.0" em "Versão mínima do jogo testada" nas duas specs e marcar o P02 como concluído no ROADMAP. Se falhar: anotar no PR o que apareceu no `console.txt`.
+3. **Claude, assim que o P00 fechar:** escrever a SPEC-010 (igrejas e âncoras) e o roteiro de coleta do P06 para Rosewood (`GUIA-CLAUDE.md` §2, "Dados do mapa"). Com o P02 concluído, ficam desbloqueadas as provas técnicas P03, P04 e P05.
 
 ## O que foi feito
 
-- Pasta `design/` criada: GDD v0.2 (`design/church_run_gdd.md`), `design/lojas.md` (a v0.1 ficou no histórico do Git e a v0.2 entrou por cima) e `design/buffs.md`. `GUIA-CLAUDE.md` e `ROADMAP.md` entraram no Git como chegaram.
-- `PROMPT-SESSAO.md` criado a partir do prompt de sessão do Rodrigo, com a ordem de leitura nova: JOURNAL → CONTEXT → CLAUDE → GUIA → ROADMAP → GDD → DOCS-GUIDE → specs.
-- GDD §1.2 ganhou as decisões de 26/10/2026 (ID, licença, Kit do Peregrino com a relíquia de Rosewood, relíquia achada da igreja 2 em diante), com ajustes no §4.1, §7.1, §11.1 e §14.9.
-- ROADMAP: status de P00, P01 e P02 atualizados; novo P06a (Kit do Peregrino e relíquia de Rosewood, depende do P02); o P07 passa a depender do P06a; o P24 traz a relíquia escondida como decidida.
-- `CONTEXT.md` virou um mapa com links para o GDD e o ROADMAP, sem repetir números de design. `DOCS-GUIDE.md` ganhou o GDD, os anexos, o ROADMAP, o GUIA, o PROMPT-SESSAO e a pasta `research/`, a numeração de specs do GDD §13 e a regra de quem manda em quê. O `CLAUDE.md` aponta para o GDD, o ROADMAP e o GUIA, e a §11 inclui o fim de sessão do GUIA §4.
-- Correções: ADR-003 (SPEC-072 → SPEC-079, só a referência), teleporte em `design/lojas.md` (→ GDD §2.2), reroll em `design/buffs.md` (1 grátis decidido, extra a 15 × N) e links novos no `README.md`.
-- Verificação: script conferiu 70 links locais dos `.md`, 0 quebrados (o mesmo script acusa links quebrados num teste negativo).
-- Memória do ambiente copiada para a pasta de memória do projeto, porque a raiz do Git mudou para a pasta do projeto.
+- SPEC-001 e SPEC-002 aprovadas pelas respostas recomendadas (ver "Decisões tomadas").
+- ADR-005: o código do cliente fica em `ChurchRun/Client/` e o do servidor em `ChurchRun/Server/`. Motivo: o `require` do jogo procura o nome nas três pastas, e o vanilla 42.21.0 não repete nenhum caminho entre elas. `CLAUDE.md`, `CONTEXT.md` e SPEC-002 ajustados.
+- [PR #1](https://github.com/RodrigoRochaaa/church_run/pull/1), SPEC-001 (branch `spec-001-protocolo`):
+  - catálogo e validador de esquema; roteador na ordem do R4, com rate limit por jogador e comando e log de auditoria limitado a 10 linhas por minuto;
+  - ping no `OnCreatePlayer`, aviso de versão diferente (`ISModalDialog`, traduções EN e PT-BR) e entrega em single player por `triggerEvent`;
+  - adaptadores, ports e os dois `Main.lua`; 73 testes.
+- [PR #2](https://github.com/RodrigoRochaaa/church_run/pull/2), SPEC-002 (branch `spec-002-persistencia`, em cima do #1):
+  - `ChurchRun_World` v1 (`createdAtMs`, `bootCount`), migrações tudo-ou-nada com backup e modo seguro;
+  - trava do roteador: sem os dados, só o ping passa; 98 testes no total.
+- CI verde nos dois PRs, com o luacheck sem avisos em 40 arquivos. Isso resolveu o VERIFICAR dos globs do `.luacheckrc`: `**` casa zero pastas.
+- API do 42.21.0 conferida no Lua vanilla, no Umbrella e nas classes do jogo:
+  - `ISModalDialog:new(x, y, w, h, texto, simNao)`;
+  - `getText(chave, a, b)` com `%1`/`%2`;
+  - `OnCreatePlayer(playerIndex, player)`;
+  - `args` chega `nil` quando a tabela está vazia;
+  - mods publicam o próprio `Translate/EN/UI.json`.
 
 ## Decisões tomadas
 
-- Relíquia já na Fase 1: o Kit do Peregrino vem numa mochila básica e traz a relíquia de Rosewood enquanto ela não for conquistada; da igreja 2 em diante a relíquia é achada (GDD §1.2).
-- `PROMPT-SESSAO.md` feito a partir do prompt do Rodrigo; v0.1 das lojas guardada só no histórico do Git; `CONTEXT.md` como resumo com links para o GDD.
-- O P06a depende do P02, e não do P03: o kit precisa do servidor saber se Rosewood foi conquistada, não do teleporte.
+Todas pelas recomendações, sob a autonomia dada pelo Rodrigo em 26/10/2026; podem ser revistas quando ele voltar.
+
+- SPEC-001: single player suportado (R16); limites de comando ajustáveis pelo admin ficam para uma spec futura.
+- SPEC-002: backup antes de migrar mantido; single player com a mesma persistência (R12).
+- GDD §13: a primeira fatia jogável segue o ROADMAP, e a carteira entra na Fase 2 (GUIA §6.1).
+- ADR-005 (caminhos Lua únicos).
+- Mensagens de erro de desenvolvedor em inglês ASCII, porque não se sabe com que codificação o Kahlua lê o código; comentários continuam em português.
+- O P02 começou com o P00 ainda "aguardando teste". O que falta no P00 é só o teste no jogo, que não afeta o código Lua puro. Para cumprir a regra de dependências do GUIA, os PRs só devem ser mesclados depois desse teste.
 
 ## Pendências e bloqueios
 
-- P00 e P02 esperam o Rodrigo (ver "Próximo passo").
-- Decisões do GDD §14 por fase: Fase 1, #1 (cadeia) e #5 (corpo do morto); Fase 2, #2 (carteira ou moeda física); Fase 3, #8 (os 30 buffs); Fase 5, #3 (teleporte), #4 (descontos) e #9 (missões); Fase 6, #7 (o Bispo); depois da 1.0, #6 (contra-ataques).
-- O GDD §13 põe a carteira na primeira fatia jogável, mas o ROADMAP põe as moedas na Fase 2 (P13). Pelo GUIA §6.1 o ROADMAP manda no "quando", então vale a Fase 2, e as 30 moedas do kit entram com o P13. Confirmar com o Rodrigo ou ajustar o GDD §13.
-- Risco do kit: dá para farmar o kit morrendo de propósito. Mitigação proposta para a spec do P06a: esvaziar o corpo (decisão #5) e um kit por personagem.
-- Segredo da relíquia escondida (igrejas 2 a 5): qualquer cliente pode ler a Global ModData (SPEC-002, Segurança), então a posição da relíquia não pode ficar lá. Resolver na SPEC-080.
-- VERIFICAR B42 do P06a: item dado pelo servidor aparece no cliente sem sincronização extra (plano de arquitetura, "Recompensas").
-- WSL antes da primeira spec com código (o CI cobre até lá); globs do `.luacheckrc` a conferir no primeiro PR com código.
+- Testes no jogo do P00 e do P02 (Rodrigo). Nada é mesclado sem eles (`CLAUDE.md` §8: PR que toca rede ou dados precisa do checklist de MP).
+- VERIFICAR B42, a confirmar nesses testes:
+  - em single player, a resposta volta por `triggerEvent`;
+  - o `OnCreatePlayer` dispara quando o servidor já aceita pedidos;
+  - onde o `writeLog` grava;
+  - o `OnInitGlobalModData` dispara antes do primeiro jogador;
+  - uma Global ModData transmitida pelo cliente não é gravada pelo servidor.
+- Decisões do GDD §14 por fase: Fase 1, #1 (cadeia) e #5 (corpo do morto); Fase 2, #2 (carteira); Fase 3, #8 (os 30 buffs); Fase 5, #3, #4 e #9; Fase 6, #7; depois da 1.0, #6. Sob a autonomia, cada uma recebe a proposta do GDD quando a fase dela chegar, a menos que o Rodrigo diga outra coisa.
+- Para as specs futuras:
+  - risco de farmar o Kit do Peregrino morrendo de propósito (spec do P06a);
+  - a posição da relíquia escondida não pode ficar na Global ModData, que qualquer cliente lê (SPEC-080);
+  - item dado pelo servidor precisa aparecer no cliente sem sincronização extra (VERIFICAR do P06a).
+- WSL antes de rodar os testes no próprio PC; até lá, o CI roda tudo.
 
 ## Arquivos tocados
 
-`design/church_run_gdd.md`, `design/lojas.md`, `design/buffs.md`, `GUIA-CLAUDE.md`, `ROADMAP.md`, `PROMPT-SESSAO.md`, `CONTEXT.md`, `DOCS-GUIDE.md`, `CLAUDE.md`, `README.md`, `specs/decisions/ADR-003-licenca.md`, `JOURNAL.md`
+Na `main`: `specs/001-protocolo-comandos.md`, `specs/002-persistencia.md`, `specs/README.md`, `specs/checklist-mp.md`, `specs/decisions/ADR-005-caminhos-lua-unicos.md`, `CLAUDE.md`, `CONTEXT.md`, `DOCS-GUIDE.md`, `design/church_run_gdd.md`, `ROADMAP.md`, `JOURNAL.md`. Nos PRs: `Contents/mods/church_run/42/media/lua/**`, `tests/**`, `.busted`, `.luacheckrc`, `DEPENDENCIES.md`, `CHANGELOG.md` e as duas specs.
