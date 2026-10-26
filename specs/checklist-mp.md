@@ -34,6 +34,7 @@ Itens que dependem de funcionalidade ainda não feita (cerco, compra) são marca
 - [ ] CA5: cliente com versão de protocolo diferente vê a mensagem e não envia mais nada.
 - [ ] CA14: no console de debug do cliente, `ping` com `nonce = "x"` gera `invalidArgs` e o comando `hack` gera `unknownCommand` no log do servidor, sem erro de Lua.
 - [ ] CA15: com listen server, um `pong` por cliente e nenhum `ping` duplicado.
+- [ ] CA16: em single player, o console registra o `ping` do servidor e o `pong` do cliente.
 
 ### SPEC-002 Persistência
 

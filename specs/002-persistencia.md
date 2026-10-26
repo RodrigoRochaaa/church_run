@@ -1,6 +1,6 @@
 # SPEC-002 Persistência
 
-- **Status:** rascunho
+- **Status:** aprovada em 26/10/2026, com as respostas recomendadas às questões em aberto (backup antes de migrar; single player com a mesma persistência), sob a autonomia dada pelo Rodrigo
 - **Versão mínima do jogo testada:** — (API conferida no código do 42.21.0 em 26/10/2026; nada testado no jogo ainda)
 - **Fase:** 0 (`CONTEXT.md` §6)
 - **ADRs ligadas:** [ADR-001](decisions/ADR-001-servidor-autoritativo.md), [ADR-002](decisions/ADR-002-progressao-global.md), [ADR-004](decisions/ADR-004-id-e-namespace.md)
@@ -21,7 +21,7 @@ O estado do mod tem de sobreviver a reinícios do servidor e a atualizações do
 
 - **R1. Onde.** Todo dado persistente do mod fica em Global ModData do servidor, em chaves com prefixo `ChurchRun_` (`CLAUDE.md` §5). Esta versão cria uma chave, `ChurchRun_World`, com o estado global ([ADR-002](decisions/ADR-002-progressao-global.md)), e a cópia de segurança dela (R5).
 - **R2. Só o servidor escreve.** O `app` acessa os dados pelo port `Storage`, e só o adaptador `Storage` chama `ModData`. O servidor não registra `OnReceiveGlobalModData` para chaves `ChurchRun_`. Assim, um cliente que transmita uma tabela com esse nome não muda nada (ver Segurança).
-- **R3. Versão.** Toda chave tem `schemaVersion` (inteiro, a partir de 1) no topo. A versão atual de cada chave e a lista de migrações ficam em `server/ChurchRun/migrations/`. Mudou o formato salvo: versão nova, migração e teste, no mesmo PR.
+- **R3. Versão.** Toda chave tem `schemaVersion` (inteiro, a partir de 1) no topo. A versão atual de cada chave e a lista de migrações ficam em `server/ChurchRun/Server/migrations/`. Mudou o formato salvo: versão nova, migração e teste, no mesmo PR.
 - **R4. Carga.** No `OnInitGlobalModData` do servidor, para cada chave:
   1. chave vazia (mundo novo, ou mod instalado num mundo que já existia) → grava os valores iniciais da versão atual;
   2. `schemaVersion` igual à atual → usa como está;
@@ -47,6 +47,7 @@ O estado do mod tem de sobreviver a reinícios do servidor e a atualizações do
   Valores iniciais (R4.1): `createdAtMs` = agora e `bootCount` = 0, que a própria carga leva a 1. Os dois campos servem ao diagnóstico: aparecem na linha `storage.loaded`, e é por eles que se vê que os dados sobreviveram a um reinício. As specs da campanha (SPEC-010, SPEC-011) acrescentam os campos de progresso na v2.
 - **R10. Só tipos simples.** Os dados salvos só têm string, número, booleano e tabelas desses tipos, nunca funções nem objetos do jogo, para o save conseguir gravar.
 - **R11. Tamanho limitado.** Nada cresce sem limite na Global ModData. Históricos e logs ficam no log do servidor. Toda spec que acrescentar uma lista declara o tamanho máximo dela.
+- **R12. Single player.** A persistência é a mesma: a Global ModData do save local, carregada no `OnInitGlobalModData` (em single player as pastas `client/` e `server/` carregam juntas).
 
 ## Contrato
 
@@ -96,8 +97,3 @@ Eventos: `storage.loaded`, `storage.created`, `storage.migrated` (de, para), `st
 ## Impacto em dados
 
 Primeira versão do esquema (v1). Como não há dados antigos, não há migração real. O mecanismo de migração é testado com migrações de teste (CA3, CA4, CA7).
-
-## Questões em aberto
-
-1. **Backup antes de migrar** (R5). Recomendo manter: custa uma cópia pequena e dá ao admin um caminho de volta sem ferramenta externa. A alternativa é só registrar a migração no log.
-2. **Single player.** A persistência é a mesma (Global ModData do save local). Segue a decisão da questão 1 da SPEC-001.

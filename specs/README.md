@@ -6,8 +6,8 @@ Uma spec por funcionalidade, no formato do `CLAUDE.md` §2.1 (modelo: [`000-temp
 
 | Spec | Título | Status | Fase | Versão do jogo testada |
 |---|---|---|---|---|
-| [SPEC-001](001-protocolo-comandos.md) | Protocolo de comandos | rascunho | 0 | — |
-| [SPEC-002](002-persistencia.md) | Persistência | rascunho | 0 | — |
+| [SPEC-001](001-protocolo-comandos.md) | Protocolo de comandos | aprovada | 0 | — |
+| [SPEC-002](002-persistencia.md) | Persistência | aprovada | 0 | — |
 
 ## ADRs
 
@@ -17,6 +17,7 @@ Uma spec por funcionalidade, no formato do `CLAUDE.md` §2.1 (modelo: [`000-temp
 | [ADR-002](decisions/ADR-002-progressao-global.md) | Progressão global do servidor | aceita |
 | [ADR-003](decisions/ADR-003-licenca.md) | Licença e dependências externas | aceita |
 | [ADR-004](decisions/ADR-004-id-e-namespace.md) | ID do mod `church_run` e namespace `ChurchRun` | aceita |
+| [ADR-005](decisions/ADR-005-caminhos-lua-unicos.md) | Nenhum caminho Lua repetido entre shared, client e server | aceita |
 
 ## Teste manual
 

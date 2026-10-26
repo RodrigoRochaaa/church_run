@@ -76,7 +76,7 @@ Regras de dependência (setas só para dentro):
 - `app` depende de `domain` e de `ports`, nunca de `adapters`.
 - `adapters` dependem de `ports` e da API do jogo.
 - `ui` não acessa `server/`, nem ModData de outro jogador, nem decide nada.
-- A ligação (qual adaptador implementa qual port) acontece só nos arquivos de bootstrap: `server/ChurchRun/Main.lua` e `client/ChurchRun/Main.lua`.
+- A ligação (qual adaptador implementa qual port) acontece só nos arquivos de bootstrap: `server/ChurchRun/Server/Main.lua` e `client/ChurchRun/Client/Main.lua`.
 
 ### 3.2 Estrutura de pastas do repositório
 
@@ -94,12 +94,12 @@ Contents/mods/church_run/
           defs/                   # dados: igrejas, ondas, lojas, buffs
           protocol/               # nomes de comandos, esquemas de argumentos, versão do protocolo
           util/                   # funções puras genéricas
-        client/ChurchRun/
+        client/ChurchRun/Client/
           Main.lua                # bootstrap do cliente
           net/                    # envio de pedidos e tratamento de respostas
           ui/                     # janelas, HUD e notificações
           adapters/               # eventos de cliente do jogo
-        server/ChurchRun/
+        server/ChurchRun/Server/
           Main.lua                # bootstrap do servidor
           app/                    # casos de uso
           ports/                  # contratos que o app usa; implementados em adapters/
@@ -112,19 +112,20 @@ tools/                            # scripts de lint, empacotamento e checagens
 ```
 
 - Todo arquivo Lua fica dentro de uma subpasta `ChurchRun/` para evitar colisão com outros mods.
+- Nenhum caminho relativo se repete entre `shared/`, `client/` e `server/`: o código do cliente fica em `ChurchRun/Client/` e o do servidor em `ChurchRun/Server/`, porque o `require` do jogo procura o nome nas três pastas ([ADR-005](specs/decisions/ADR-005-caminhos-lua-unicos.md)).
 - Nenhum arquivo é colocado direto em `lua/shared`, `lua/client` ou `lua/server`. A exceção é `shared/Translate/`, caminho que o jogo exige para as traduções.
 
 ### 3.3 Pontos de extensão
 
-- **Recompensas**: cada tipo (`item`, `currency`, `buff`, `unlock`) é um módulo em `server/ChurchRun/rewards/` registrado em `RewardRegistry` com `validateDef(def)` e `pay(ctx, player, def)`. O cerco e a loja usam o mesmo motor.
-- **Objetivos**: a campanha por cidade e o mural de contratos usam tipos de objetivo (`visit`, `collect`, `deliver`, `kill`, `survive`; GDD §7). O registro só é construído com a primeira spec de missão aprovada: a relíquia escondida (SPEC-080) já está decidida, e o resto depende do GDD §14.9. A partir daí, cada tipo vira um módulo em `server/ChurchRun/objectives/` registrado em `ObjectiveRegistry` com `id`, `validateDef(def)`, `onEvent(state, event)` e `isComplete(state, def)`.
+- **Recompensas**: cada tipo (`item`, `currency`, `buff`, `unlock`) é um módulo em `server/ChurchRun/Server/rewards/` registrado em `RewardRegistry` com `validateDef(def)` e `pay(ctx, player, def)`. O cerco e a loja usam o mesmo motor.
+- **Objetivos**: a campanha por cidade e o mural de contratos usam tipos de objetivo (`visit`, `collect`, `deliver`, `kill`, `survive`; GDD §7). O registro só é construído com a primeira spec de missão aprovada: a relíquia escondida (SPEC-080) já está decidida, e o resto depende do GDD §14.9. A partir daí, cada tipo vira um módulo em `server/ChurchRun/Server/objectives/` registrado em `ObjectiveRegistry` com `id`, `validateDef(def)`, `onEvent(state, event)` e `isComplete(state, def)`.
 - Registro duplicado de um mesmo `id` gera erro na carga, não sobrescrita silenciosa.
 - Outros mods podem registrar tipos novos pela API pública documentada em `specs/`.
 
 ### 3.4 Isolamento contra atualizações do jogo
 
 - Toda chamada à API do PZ (globais como `getPlayer`, `sendClientCommand`, `sendServerCommand`, `ModData`, `Events`, criação de itens, XP) vive em `adapters/`. Grep por esses nomes fora de `adapters/`, dos bootstraps e da exceção abaixo deve dar vazio; o lint confere isso.
-- **Exceção da UI:** `client/ChurchRun/ui/` pode usar as classes de interface do jogo (`ISPanel`, `ISButton`, `ISCollapsableWindow`...) e as funções de texto e tela (`getText`, `getCore`, `getTextManager`). Motivo: a interface do PZ é feita herdando dessas classes, e um adaptador por widget seria só repetição. Rede, ModData, eventos e o resto da API continuam proibidos na UI: passam por `net/` e pelos adaptadores do cliente. O `.luacheckrc` libera para `ui/` só essa lista.
+- **Exceção da UI:** `client/ChurchRun/Client/ui/` pode usar as classes de interface do jogo (`ISPanel`, `ISButton`, `ISCollapsableWindow`...) e as funções de texto e tela (`getText`, `getCore`, `getTextManager`). Motivo: a interface do PZ é feita herdando dessas classes, e um adaptador por widget seria só repetição. Rede, ModData, eventos e o resto da API continuam proibidos na UI: passam por `net/` e pelos adaptadores do cliente. O `.luacheckrc` libera para `ui/` só essa lista.
 - IDs de itens vanilla (`Base.X`) só aparecem em `defs/` e são validados na carga do servidor: ID inexistente é logado e a entrada que o usa (item de loja, recompensa) é desativada, sem derrubar o mod.
 - Comportamentos do jogo que mudam entre patches (ex.: sincronização de inventário no MP) ficam atrás de um port, com um comentário apontando a spec ou ADR que os descreve.
 - Ao subir a versão do jogo suportada: rodar o checklist de compatibilidade (seção 7), atualizar `versionMin` e registrar a mudança no `CHANGELOG.md`.

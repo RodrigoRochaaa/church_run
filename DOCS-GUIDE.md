@@ -60,7 +60,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/): seções `A
 Uma spec por funcionalidade, no formato do `CLAUDE.md` §2.1. A numeração segue o GDD §13: `001–002` base, `010–012` mundo (igrejas, nascimento, teleporte), `020–022` cerco, `030` morte, `040–043` economia, `050–051` buffs, `060–062` interface, `070–079` zumbis (070 base, uma por especial a partir da 071, 079 bandidos), `080–082` missões. Faixas com folga permitem inserir specs sem renumerar.
 
 ### `specs/decisions/`: as ADRs
-Curtas (cabeçalho com status e data, depois contexto, decisão e consequências), numeradas e imutáveis. Existentes: ADR-001 servidor autoritativo, ADR-002 progressão global, ADR-003 licença e dependências externas, ADR-004 ID do mod e namespace.
+Curtas (cabeçalho com status e data, depois contexto, decisão e consequências), numeradas e imutáveis. Existentes: ADR-001 servidor autoritativo, ADR-002 progressão global, ADR-003 licença e dependências externas, ADR-004 ID do mod e namespace, ADR-005 caminhos Lua únicos entre shared, client e server.
 
 ## Como organizar
 

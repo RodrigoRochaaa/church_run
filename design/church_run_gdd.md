@@ -426,7 +426,7 @@ Tudo que é número de balanceamento vira opção, porque um mod aberto vai roda
 | Interface | SPEC-060 HUD, SPEC-061 Mapa, SPEC-062 Janela do altar |
 | Zumbis | SPEC-070 Base de especiais, uma spec por zumbi a partir da SPEC-071, SPEC-079 Bandidos opcionais |
 
-**Primeira fatia jogável:** Base + Mundo (sem teleporte) + Cerco + Carteira, com Rosewood. Ela já permite testar o ciclo "juntar moedas → cercar → vencer".
+**Primeira fatia jogável:** Base + Mundo (sem teleporte) + Kit do Peregrino com a relíquia + Cerco, com Rosewood (Fase 1 do ROADMAP). A carteira vem logo depois, na Fase 2, e fecha o ciclo "juntar moedas → cercar → vencer". Decidido em 26/10/2026 pela regra do `GUIA-CLAUDE.md` §6.1: o ROADMAP manda no "quando".
 
 ---
 

@@ -1,6 +1,6 @@
 # SPEC-001 Protocolo de comandos
 
-- **Status:** rascunho
+- **Status:** aprovada em 26/10/2026, com as respostas recomendadas às questões em aberto (single player suportado; limites ajustáveis numa spec futura), sob a autonomia dada pelo Rodrigo
 - **Versão mínima do jogo testada:** — (API conferida no código do 42.21.0 em 26/10/2026; nada testado no jogo ainda)
 - **Fase:** 0 (`CONTEXT.md` §6)
 - **ADRs ligadas:** [ADR-001](decisions/ADR-001-servidor-autoritativo.md), [ADR-004](decisions/ADR-004-id-e-namespace.md)
@@ -40,7 +40,7 @@ Cliente e servidor precisam de um canal único e seguro para pedidos e respostas
 - **R5. Versão do protocolo.** `shared/ChurchRun/protocol/version.lua` define `PROTOCOL_VERSION`, inteiro que começa em 1. Todo pedido leva `pv` nos argumentos, e quem acrescenta é o cliente de rede (`net/`), nunca a UI. `pv` ausente, que não seja inteiro ou diferente da versão do servidor → o servidor responde `versionMismatch` e não executa o pedido. Ao receber `versionMismatch`, o cliente mostra uma janela com uma mensagem traduzida (EN e PT-BR) e para de enviar pedidos até o jogo ser reiniciado. A versão sobe quando um comando muda de forma incompatível, o que é versão major do mod (`CLAUDE.md` §8). Com `DoLuaChecksum=true` (padrão do servidor), um cliente com Lua diferente nem entra; a checagem cobre servidores com o checksum desligado.
 - **R6. Identidade.** Quem pede é sempre o `player` recebido em `OnClientCommand`, identificado pelo username. Argumentos nunca dizem quem pede.
 - **R7. Rate limit por jogador e por comando** (balde de fichas). Cada comando `toServer` declara `burst` (fichas máximas) e `perSecond` (reposição). O balde começa cheio. Pedido sem ficha é descartado: log `rateLimited` e nenhuma resposta, para não devolver uma mensagem a cada pedido de spam. O relógio é o real (`getTimestampMs()`, pelo port `Clock`), não o do jogo.
-- **R8. Log de recusas.** Toda recusa gera uma linha de auditoria no servidor com username, comando, motivo e horário, sem outros dados pessoais. Cada jogador grava no máximo 10 linhas de recusa por minuto. As excedentes são contadas, e a próxima linha registrada informa quantas foram suprimidas. Texto vindo do cliente (ex.: nome de comando desconhecido) vai para o log com no máximo 32 caracteres e sem quebras de linha nem caracteres de controle, para ninguém forjar linhas de log.
+- **R8. Log de recusas.** Toda recusa gera uma linha de auditoria no servidor com username, comando, motivo e horário, sem outros dados pessoais. Cada jogador grava no máximo 10 linhas de recusa por minuto. As excedentes são contadas, e a próxima linha registrada sobre o jogador informa quantas foram suprimidas; se ele parar de mandar pedidos, a varredura do R14 registra a contagem. Texto vindo do cliente (ex.: nome de comando desconhecido) vai para o log com no máximo 32 caracteres e sem quebras de linha nem caracteres de controle, para ninguém forjar linhas de log.
 - **R9. Resposta a recusas.** Pedido recusado por `invalidArgs` ou por erro interno (R10) recebe `rejected { command, reason, field? }`, para o cliente mostrar a falha em vez de esperar para sempre. Comando desconhecido e pedido sem ficha não recebem resposta.
 - **R10. Erro não derruba o servidor.** O handler roda em `pcall`. Se der erro: log com o comando e a mensagem, resposta `rejected` com `internalError`, e o roteador segue atendendo os pedidos seguintes.
 - **R11. Ping.** `ping { pv, nonce }` → `pong { nonce }`. O cliente manda um `ping` quando o personagem local é criado (`OnCreatePlayer`, índice 0) e registra no console do cliente o tempo de ida e volta. O servidor registra cada ping recebido com o username. É o teste de "mod carregado nos dois lados" da Fase 0.
@@ -48,6 +48,7 @@ Cliente e servidor precisam de um canal único e seguro para pedidos e respostas
 - **R13. Respostas também têm esquema.** O cliente descarta, com log local, mensagem `toClient` que não bate com o esquema. `pong` com `nonce` que o cliente não mandou é ignorado.
 - **R14. Limpeza da memória.** Baldes de rate limit e contadores de log vivem só na memória do servidor e somem num reinício. No máximo uma vez por minuto, disparada pelo próprio tráfego de comandos, uma varredura remove baldes cheios (jogador parado ou que saiu) e contadores de janelas vencidas. Assim a limpeza não depende de evento de desconexão, que o B42.21 não tem no servidor (R15).
 - **R15. Nota de API (26/10/2026).** Na lista de eventos do 42.21.0 (`LuaEventManager`) não há evento de desconexão de jogador no servidor; só `OnDisconnect`, que roda no cliente. Specs que precisarem detectar a saída de um jogador usam o adaptador `Players` (VERIFICAR B42 a melhor forma: comparar `getOnlinePlayers()` periodicamente).
+- **R16. Single player.** O caminho é o mesmo do multiplayer, com uma diferença no adaptador de rede do servidor. Em single player, `sendClientCommand` chega ao `OnClientCommand` local, mas `sendServerCommand` não volta ao cliente. Por isso, quando o jogo não é cliente nem servidor de multiplayer (`isClient()` e `isServer()` falsos), o adaptador entrega a resposta com `triggerEvent("OnServerCommand", módulo, comando, args)`. Evidência: no 42.21.0, a classe que implementa esses globais (`LuaManager$GlobalObject`) cita `OnClientCommand` e não cita `OnServerCommand`. VERIFICAR B42 em jogo.
 
 ## Contrato
 
@@ -89,7 +90,8 @@ Nenhum. Baldes e contadores ficam só na memória (R14).
 | Relógio real | `getTimestampMs()` | Umbrella 42.21.0 |
 | Log de auditoria | `print` e `writeLog(loggerName, logs)` | Umbrella 42.21.0; VERIFICAR B42 onde o `writeLog` grava o arquivo |
 | Texto traduzido | `getText(chave, ...)`; arquivos JSON em `shared/Translate/<idioma>/` | Umbrella 42.21.0; formato JSON e pasta `PTBR` conferidos nos arquivos do 42.21.0. VERIFICAR B42 a passagem de parâmetros `%1`/`%2` e se o `UI.json` do mod é somado ao do jogo |
-| Janela de aviso | `ISModalDialog` | VERIFICAR B42 o construtor |
+| Janela de aviso | `ISModalDialog:new(x, y, w, h, texto, simNao)`, depois `initialise()` e `addToUIManager()` | Lua vanilla do 42.21.0 (`ISModalDialog.lua`, `BrushToolManager.lua`) |
+| Single player: detectar e entregar a resposta localmente (R16) | `isClient()`, `isServer()` e `triggerEvent("OnServerCommand", módulo, comando, args)` | Umbrella 42.21.0; `triggerEvent` é usado pelo vanilla. A entrega em SP é dedução das classes do 42.21.0: VERIFICAR B42 |
 
 ## Segurança
 
@@ -122,12 +124,8 @@ Nenhum. Baldes e contadores ficam só na memória (R14).
 - **CA13** (R14). Dado baldes de jogadores parados, quando passa mais de um minuto e chega um pedido qualquer, então os baldes cheios são removidos. Teste com relógio falso.
 - **CA14** (R4, R8, servidor real). Dado um servidor dedicado, quando um cliente em modo debug roda no console `sendClientCommand(getPlayer(), "ChurchRun", "ping", { pv = 1, nonce = "x" })` e depois `sendClientCommand(getPlayer(), "ChurchRun", "hack", { pv = 1 })`, então o log do servidor mostra `invalidArgs` (campo `nonce`) e `unknownCommand`, sem erro de Lua. Checklist MP, item 7.
 - **CA15** (listen server). Dado o host jogando e um segundo cliente, quando os dois entram, então cada um recebe um `pong`, e o servidor registra um `ping` por cliente, sem duplicar. Checklist MP, item 8.
+- **CA16** (R16, single player). Dado um jogo single player com o mod, quando o personagem é criado, então o console registra o `ping` do servidor e o `pong` do cliente. Teste do adaptador com `isClient`/`isServer` falsos e checklist manual.
 
 ## Impacto em dados
 
 Nenhum. A spec não grava nada.
-
-## Questões em aberto
-
-1. **Single player.** Recomendo suportar, porque o caminho é o mesmo e ajuda a testar rápido: o adaptador de rede entrega a resposta localmente quando não há servidor separado. Isso depende de VERIFICAR B42 como `sendClientCommand` e `sendServerCommand` se comportam em single player. A alternativa é declarar single player fora da v1.
-2. **Limites ajustáveis pelo admin.** Recomendo deixar para uma spec futura (Sandbox Options) e, por enquanto, manter os limites no catálogo.

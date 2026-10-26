@@ -84,12 +84,12 @@ church_run/                                # raiz do repositório = item do Work
           defs/     churches.lua waves.lua shops.lua buffs.lua
           protocol/ commands.lua schemas.lua version.lua
           util/
-        lua/client/ChurchRun/
+        lua/client/ChurchRun/Client/       # caminhos únicos entre os lados (ADR-005)
           Main.lua
           net/                             # enviar pedidos, receber estado
           ui/       hud/ shop/ buffdraft/ map/
           adapters/                        # eventos de cliente, símbolos do mapa
-        lua/server/ChurchRun/
+        lua/server/ChurchRun/Server/
           Main.lua                         # liga ports a adapters
           app/      siege/ spawn/ death/ shop/ buffs/
           ports/                           # contratos que o app usa (Storage, Clock, Log, Net, Players...)
@@ -99,7 +99,7 @@ church_run/                                # raiz do repositório = item do Work
   specs/
     README.md  000-template.md  checklist-mp.md
     001-protocolo-comandos.md  002-persistencia.md ...
-    decisions/ ADR-001-servidor-autoritativo.md  ADR-002-progressao-global.md  ADR-003-licenca.md  ADR-004-id-e-namespace.md
+    decisions/ ADR-001-servidor-autoritativo.md  ADR-002-progressao-global.md  ADR-003-licenca.md  ADR-004-id-e-namespace.md  ADR-005-caminhos-lua-unicos.md
   tests/                                   # busted, Lua 5.1, ports falsos
   tools/                                   # lint, empacotar, checar "API do jogo fora de adapters/"
 ```
