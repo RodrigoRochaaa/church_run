@@ -3,6 +3,8 @@ std = "lua51"
 max_line_length = 120
 globals = { "ChurchRun" }
 exclude_files = { "tests/fixtures/**" }
+-- Argumento que começa com _ é de propósito não usado (ex.: callbacks com assinatura fixa).
+ignore = { "212/_.*" }
 
 -- API do jogo: só em adapters/ e nos Main.lua. A lista cresce conforme os adaptadores precisarem.
 local PZ_API = {
@@ -14,6 +16,7 @@ local PZ_API = {
     "getPlayerFromUsername",
     "sendClientCommand",
     "sendServerCommand",
+    "triggerEvent",
     "isClient",
     "isServer",
     "getTimestampMs",
