@@ -1,16 +1,18 @@
 # CONTEXT.md: o que estamos construindo e em que ordem
 
-> Leia este arquivo primeiro. Ele dá a visão geral; as **regras** de código ficam no [`CLAUDE.md`](CLAUDE.md) e não são repetidas aqui.
+> Leia este arquivo primeiro. Ele é o mapa do projeto: aponta onde cada coisa está e não repete o que mora em outro lugar.
+> O **o quê** está no GDD ([`design/church_run_gdd.md`](design/church_run_gdd.md)), o **como** no [`CLAUDE.md`](CLAUDE.md) e o **quando** no [`ROADMAP.md`](ROADMAP.md) (`GUIA-CLAUDE.md` §6).
 > Última revisão: 26/10/2026.
 
 ---
 
 ## 1. O mod em uma frase
 
-Um mod **multiplayer** para Project Zomboid **Build 42 (42.20+)** em que o grupo conquista, uma a uma, a igreja principal de cada cidade de Knox Country, sobrevivendo a ondas de zumbis com tempo marcado; cada vitória libera um novo ponto de nascimento, moedas, lojas e buffs.
+Um mod **multiplayer** para Project Zomboid **Build 42 (42.20+)** em que o grupo atravessa Knox Country conquistando a igreja de 5 cidades vizinhas, uma a uma. Cada conquista é um cerco de ondas de zumbis com tempo marcado e libera um novo ponto de nascimento, teleporte, lojas maiores e buffs. O ciclo completo está no GDD §1.
 
 - 100% Lua + scripts de item. Sem Java.
-- O **servidor** decide tudo; o cliente só pede e mostra (ver `CLAUDE.md` §1 e §4).
+- O **servidor** decide tudo; o cliente só pede e mostra (`CLAUDE.md` §1 e §4, [ADR-001](specs/decisions/ADR-001-servidor-autoritativo.md)).
+- Progresso global do servidor ([ADR-002](specs/decisions/ADR-002-progressao-global.md)).
 - Gratuito e de código aberto: MIT para o código e CC BY 4.0 para a arte ([ADR-003](specs/decisions/ADR-003-licenca.md)).
 - ID do mod `church_run`, namespace do código `ChurchRun` ([ADR-004](specs/decisions/ADR-004-id-e-namespace.md)).
 
@@ -18,38 +20,29 @@ Um mod **multiplayer** para Project Zomboid **Build 42 (42.20+)** em que o grupo
 
 | Documento | Para que serve |
 |---|---|
+| [`design/church_run_gdd.md`](design/church_run_gdd.md) | O jogo: cidades, cerco, zumbis, economia, missões, buffs, interface, riscos, specs a escrever e decisões em aberto (§14) |
+| [`design/lojas.md`](design/lojas.md) e [`design/buffs.md`](design/buffs.md) | Anexos do GDD: catálogo com IDs e preços; os 81 buffs candidatos e as regras do sorteio |
+| [`ROADMAP.md`](ROADMAP.md) | Os passos de cada fase, com dependências e status |
+| [`GUIA-CLAUDE.md`](GUIA-CLAUDE.md) | Como escolher o próximo passo, o que pesquisar e como avisar o Rodrigo |
+| [`PROMPT-SESSAO.md`](PROMPT-SESSAO.md) | O prompt de início de sessão: ler, confirmar, executar e encerrar |
 | [`CLAUDE.md`](CLAUDE.md) | Regras obrigatórias: camadas, segurança, estilo, testes, definição de pronto |
-| [Plano de arquitetura (MP)](https://claude.ai/artifact/TbL7fUBqqyNAfFwZNwhjhQ) | Como mods de PZ funcionam, fluxo cliente/servidor, persistência |
-| [Conquista de Igrejas: viabilidade e etapas](https://claude.ai/artifact/WojQe1M1D7Di5SrskpNkZT) | O design do jogo, veredictos de viabilidade, ondas, buffs, lista de specs |
+| [`specs/`](specs/README.md) | Specs e ADRs: o comportamento exato de cada funcionalidade e o porquê das decisões |
 | [`DOCS-GUIDE.md`](DOCS-GUIDE.md) | O que cada `.md` do projeto faz e como mantê-los |
 | [`DEPENDENCIES.md`](DEPENDENCIES.md) | O que instalar para desenvolver e testar |
 | [`JOURNAL.md`](JOURNAL.md) | Onde a última sessão parou e qual é o próximo passo |
+| [Plano de arquitetura (MP)](https://claude.ai/artifact/TbL7fUBqqyNAfFwZNwhjhQ) | Como mods de PZ funcionam, fluxo cliente/servidor, persistência |
+| [Conquista de Igrejas: viabilidade e etapas](https://claude.ai/artifact/WojQe1M1D7Di5SrskpNkZT) | Histórico. A parte de design foi substituída pelo GDD v0.2 |
 
 ## 3. O que será construído
 
-O ciclo do jogo:
+O design está no GDD, e este arquivo não repete os números dele:
 
-1. O grupo nasce no único spawn liberado (no começo, a cidade da Igreja 1).
-2. Na igreja, alguém interage com o altar e inicia o **cerco**.
-3. O servidor gera **ondas** de zumbis num anel de 50 a 90 tiles, que caminham até a igreja, por um tempo fixo.
-4. Zumbis mortos no cerco deixam **moedas**. Quem morre fica numa área de espera até o cerco acabar.
-5. Quando o tempo zera, a igreja é **conquistada**: recompensa paga uma vez por jogador vivo, ícone no mapa, novo spawn liberado e **escolha de buffs** (3 opções sorteadas, sem repetir).
-6. As moedas compram armas, remédios, barricadas e roupas nas **lojas** da igreja. O catálogo cresce a cada igreja.
-
-Ordem proposta das igrejas: Rosewood → Riverside → West Point → Muldraugh → Louisville (final). Progresso **global do servidor** ([ADR-002](specs/decisions/ADR-002-progressao-global.md)).
-
-Funcionalidades, agrupadas por módulo:
-
-| Módulo | O que faz | Specs |
-|---|---|---|
-| Base | Protocolo de comandos, persistência com `schemaVersion` | SPEC-001, SPEC-002 |
-| Igrejas e spawn | Dados das igrejas; teleportar o personagem novo para o spawn liberado | SPEC-010, SPEC-011 |
-| Cerco | Máquina de estados (preparo, onda, descanso, vitória, derrota), gerador de zumbis, tabela de ondas | SPEC-020 a 022 |
-| Morte | Área de espera durante o cerco, perda total | SPEC-030 |
-| Economia | Moeda (item), drop, lojas por igreja | SPEC-040, SPEC-041 |
-| Buffs | Sorteio, posse, catálogo de 30 | SPEC-050, SPEC-051 |
-| Interface | HUD lateral (onda, tempo, restantes, buffs), ícone no mapa | SPEC-060, SPEC-061 |
-| Especiais | Corredores, zumbi tanque (protótipo), bandidos opcionais | SPEC-070 a 072 |
+- ciclo do jogo e decisões já tomadas: GDD §1;
+- cidades, nascimento e teleporte: GDD §2;
+- dificuldade, cerco, zumbis, economia, missões e buffs: GDD §3 a §8;
+- interface e opções de sandbox: GDD §9 e §10;
+- riscos técnicos a provar antes das specs: GDD §12;
+- lista de specs por módulo: GDD §13.
 
 ## 4. Arquitetura em resumo
 
@@ -68,20 +61,23 @@ cliente (ui, net)  ──pedido──▶  servidor: Router ─▶ app (casos de 
 
 ## 5. Estrutura de pastas
 
-É a estrutura do `CLAUDE.md` §3.2, com as subpastas por funcionalidade que o design da conquista de igrejas pede. **Toda pasta nova segue as camadas**: uma funcionalidade aparece em `domain/`, `app/` e `adapters/`, nunca numa pasta que mistura tudo.
+É a estrutura do `CLAUDE.md` §3.2, com as subpastas por funcionalidade que o design pede. **Toda pasta nova segue as camadas**: uma funcionalidade aparece em `domain/`, `app/` e `adapters/`, nunca numa pasta que mistura tudo.
 
 ```
 church_run/                                # raiz do repositório = item do Workshop (a pasta local pode ter outro nome)
   CLAUDE.md  CONTEXT.md  DOCS-GUIDE.md  DEPENDENCIES.md  JOURNAL.md  CHANGELOG.md  README.md  LICENSE
+  GUIA-CLAUDE.md  ROADMAP.md  PROMPT-SESSAO.md
   workshop.txt  preview.png                # só na publicação (Fase 7)
   .luacheckrc  .stylua.toml  .emmyrc.example.json  .gitattributes  .gitignore   # ferramentas (ver DEPENDENCIES.md)
   .github/workflows/ci.yml                 # lint e testes a cada push e PR
+  design/                                  # o "o quê": church_run_gdd.md, lojas.md, buffs.md
+  research/                                # relatórios das provas técnicas: AAAA-MM-DD-nome.md (GUIA-CLAUDE.md §2)
   Contents/mods/church_run/
     common/                                # texturas, ícones, poster (o B42 espera a pasta, mesmo vazia)
     42/
       mod.info                             # id=church_run, versionMin=42.20.0
       media/
-        scripts/ChurchRun_items.txt        # moeda, itens do mod
+        scripts/ChurchRun_items.txt        # itens do mod (relíquias, kit de primeiros socorros...)
         lua/shared/Translate/{EN,PTBR}/    # textos do jogador em JSON (conferido no B42.21.0 em 26/10/2026)
         lua/shared/ChurchRun/
           domain/   siege/ waves/ buffs/ economy/ churches/
@@ -114,21 +110,21 @@ Por que a raiz do repositório é o item do Workshop: o jogo procura mods em `C:
 
 Regra de prioridade: **primeiro uma fatia jogável de ponta a ponta (Igreja 1), depois largura.** Nada de loja, buff ou zumbi especial antes de um cerco funcionar em multiplayer com dois clientes.
 
-Cada fase só começa quando as decisões de design que ela usa (D1 a D6, no doc de viabilidade) estiverem fechadas, e termina com algo testável num servidor com dois clientes.
+Cada fase começa pelas provas técnicas dela (GDD §12) e só começa quando as decisões do GDD §14 que ela usa estiverem fechadas. Toda fase termina com algo testável num servidor com dois clientes. Os passos de cada fase, com dependências e status, estão no [`ROADMAP.md`](ROADMAP.md).
 
-| Fase | Entrega | Specs / ADRs | Decisões antes | Pronto quando |
-|---|---|---|---|---|
-| **0. Fundação** (em andamento) | Repositório, ferramentas, esqueleto do mod, ping cliente↔servidor, protocolo e persistência | ADR-001/002/003/004, SPEC-001, 002 | Licença, nome do mod (fechadas em 26/10/2026) | Mod carrega nos dois lados; comando inválido recusado e logado; dados sobrevivem a reiniciar o servidor |
-| **1. Igreja 1 jogável** | Dados da Igreja 1, spawn liberado, cerco com timer, ondas, morte com área de espera, HUD mínimo (onda e tempo) | SPEC-010, 011, 020, 021, 022, 030, parte da 060 | D1, D2, D6 | Dois jogadores conquistam Rosewood; vitória paga uma vez; spawn muda para a próxima cidade |
-| **2. Economia** | Moeda como item, drop no cerco, loja com 4 abas | SPEC-040, 041 | D3, D4 | Compra validada no servidor; clique duplo não cobra duas vezes |
-| **3. Buffs** | Sorteio de 3, posse por personagem, perda na morte | SPEC-050, 051 | D5 | Sorteio sem repetição nos dois clientes; buff some ao morrer |
-| **4. Interface completa** | HUD completo, ícone de igreja vencida no mapa | SPEC-060, 061 | — | Ícone aparece para quem entra depois da conquista |
-| **5. Igrejas 2 a 5** | Dados e balanceamento das outras igrejas, corredores | SPEC-010 (dados), 070 | D1, D6 | Campanha completa jogável |
-| **6. Especiais (opcional)** | Zumbi tanque (protótipo), bandidos via Bandits NPC se instalado | SPEC-071, 072 | — | Protótipo estável em MP, ou descartado com registro na ADR |
-| **7. Publicação** | Checklist de MP, poster, página do Workshop, versão 1.0 | — | — | Checklist de MP do `CLAUDE.md` §7 todo marcado |
+| Fase | Entrega (passos do ROADMAP) | Decisões antes (GDD §14) | Pronto quando |
+|---|---|---|---|
+| **0. Fundação** (em andamento) | Repositório, ferramentas, esqueleto do mod, protocolo e persistência (P00 a P02) | Licença e nome do mod (fechadas em 26/10/2026) | Mod carrega nos dois lados; comando inválido recusado e logado; dados sobrevivem a reiniciar o servidor |
+| **1. Igreja 1 jogável** | Provas de teleporte, spawn e painel; dados de Rosewood; Kit do Peregrino com a relíquia; cerco, morte, nascimento e HUD mínimo (P03 a P11) | #1 cadeia de cidades, #5 corpo do morto | Dois jogadores conquistam Rosewood; vitória paga uma vez; spawn muda para a próxima cidade |
+| **2. Economia** | Atribuição do abate, moedas, Loja Básica e loja da igreja 1, conserto no altar (P12 a P15) | #2 carteira ou moeda física | Compra validada no servidor; clique duplo não cobra duas vezes |
+| **3. Buffs** | Sorteio de 3, reroll, posse por personagem, perda na morte (P16, P17) | #8 os 30 buffs | Sorteio sem repetição nos dois clientes; buff some ao morrer |
+| **4. Interface completa** | HUD completo e ícones no mapa (P18, P19) | — | Ícone aparece para quem entra depois da conquista |
+| **5. Igrejas 2 a 5** | Corredor e base dos especiais, dados das igrejas 2 a 5, teleporte, relíquia escondida (P20 a P24) | #1 cadeia, #3 teleporte, #4 descontos, #9 missões | Campanha completa jogável |
+| **6. Zumbis especiais** | Especiais do GDD §5.3 e bandidos opcionais (P25 a P29) | #7 o Bispo | Cada especial estável em MP, ou descartado com registro no GDD §12 |
+| **7. Publicação** | Sandbox, traduções, poster, página da Oficina, checklist de MP (P30, P31) | — | Checklist de MP do `CLAUDE.md` §7 todo marcado |
 
-O roteiro de 9 etapas do plano de arquitetura continua valendo para a Fase 0 (etapas 1 a 3). As etapas de "missões genéricas" (tipos de objetivo, gerador de missões) ficam **fora da v1**: o motor de recompensas é reaproveitado pelo cerco e pela loja, e o registro de objetivos só é construído quando uma spec pedir.
+O roteiro de 9 etapas do plano de arquitetura vale para a Fase 0 (etapas 1 a 3). O resto dele (missões genéricas, gerador de missões) foi substituído pelo GDD §7 e pelo ROADMAP.
 
 ## 7. Questões em aberto
 
-- Decisões D1 a D6 do doc de viabilidade: moeda fora do cerco, corpo do morto, 5 ou 4 igrejas, catálogo, lista de buffs, tabela de ondas. Da D2, só "progresso global ou por jogador" está fechada (ADR-002).
+As decisões de design em aberto estão no GDD §14. A tabela do §6 mostra qual fase cada uma bloqueia; a #6 (contra-ataques) só pesa depois da 1.0.

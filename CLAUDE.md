@@ -1,6 +1,6 @@
 # CLAUDE.md: church_run (Project Zomboid, Build 42, multiplayer)
 
-Mod de conquista de igrejas (cercos com ondas de zumbis, moedas, lojas e buffs) para servidores multiplayer do Project Zomboid **Build 42 (42.20+)**. Não há suporte a B41. Visão geral e fases: [`CONTEXT.md`](CONTEXT.md).
+Mod de conquista de igrejas (cercos com ondas de zumbis, moedas, lojas e buffs) para servidores multiplayer do Project Zomboid **Build 42 (42.20+)**. Não há suporte a B41. Visão geral e fases: [`CONTEXT.md`](CONTEXT.md). O que o jogo é: [`design/church_run_gdd.md`](design/church_run_gdd.md); a ordem dos passos: [`ROADMAP.md`](ROADMAP.md); como escolher o próximo passo: [`GUIA-CLAUDE.md`](GUIA-CLAUDE.md). Este arquivo manda no **como**.
 Plano de arquitetura de referência: https://claude.ai/artifact/TbL7fUBqqyNAfFwZNwhjhQ
 Nomes técnicos ([ADR-004](specs/decisions/ADR-004-id-e-namespace.md)): `church_run` é o ID do mod (`mod.info`, `Mods=\church_run`, pasta do Workshop); `ChurchRun` é o namespace do código (pastas Lua, tabela global, prefixo de ModData, módulo de comandos e de itens).
 
@@ -117,7 +117,7 @@ tools/                            # scripts de lint, empacotamento e checagens
 ### 3.3 Pontos de extensão
 
 - **Recompensas**: cada tipo (`item`, `currency`, `buff`, `unlock`) é um módulo em `server/ChurchRun/rewards/` registrado em `RewardRegistry` com `validateDef(def)` e `pay(ctx, player, def)`. O cerco e a loja usam o mesmo motor.
-- **Objetivos**: fora da v1 (`CONTEXT.md` §6). Se uma spec pedir, cada tipo vira um módulo em `server/ChurchRun/objectives/` registrado em `ObjectiveRegistry` com `id`, `validateDef(def)`, `onEvent(state, event)` e `isComplete(state, def)`.
+- **Objetivos**: a campanha por cidade e o mural de contratos usam tipos de objetivo (`visit`, `collect`, `deliver`, `kill`, `survive`; GDD §7). O registro só é construído com a primeira spec de missão aprovada: a relíquia escondida (SPEC-080) já está decidida, e o resto depende do GDD §14.9. A partir daí, cada tipo vira um módulo em `server/ChurchRun/objectives/` registrado em `ObjectiveRegistry` com `id`, `validateDef(def)`, `onEvent(state, event)` e `isComplete(state, def)`.
 - Registro duplicado de um mesmo `id` gera erro na carga, não sobrescrita silenciosa.
 - Outros mods podem registrar tipos novos pela API pública documentada em `specs/`.
 
@@ -257,6 +257,7 @@ Ao encerrar uma sessão (pedido de "encerrar sessão" ou fim da tarefa):
 3. **Decisão que precisa durar não fica só no journal**: decisão de arquitetura nova vira ADR, mudança visível ao jogador vai para o `CHANGELOG.md` e fase concluída é marcada no `CONTEXT.md` §6.
 4. **Commit do journal junto com o trabalho da sessão.** Sem esse commit, o histórico da sessão se perde na próxima sobrescrita.
 5. Na resposta final, liste o que foi feito, as regras de spec cobertas e o que ficou para teste manual (§10).
+6. Siga também o fim de sessão do `GUIA-CLAUDE.md` §4: status dos passos no `ROADMAP.md`, GDD §12 quando uma prova técnica responder um VERIFICAR, aviso ao Rodrigo no formato do GUIA §5 e decisões novas dele na memória do projeto.
 
 Modelo:
 

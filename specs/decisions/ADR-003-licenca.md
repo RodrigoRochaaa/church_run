@@ -17,7 +17,7 @@ O mod é gratuito e de código aberto. A [política de modding da The Indie Ston
 
 | Mod | Licença | Como usamos |
 |---|---|---|
-| [Bandits NPC](https://steamcommunity.com/sharedfiles/filedetails/?id=3268487204) (ID `Bandits2`) | Direitos reservados; sem reupload | Integração opcional: detectada em tempo de execução e isolada num adaptador (SPEC-072). O mod funciona sem ele. |
+| [Bandits NPC](https://steamcommunity.com/sharedfiles/filedetails/?id=3268487204) (ID `Bandits2`) | Direitos reservados; sem reupload | Integração opcional: detectada em tempo de execução e isolada num adaptador (SPEC-079). O mod funciona sem ele. |
 | [Zomboid Forge](https://github.com/SirDoggyJvla/Zomboid-Forge) | GPL-3.0 | Só referência de como fazer. Copiar código dele obrigaria o mod a virar GPL-3.0, o que exige uma ADR nova. |
 | [Horde Night](https://steamcommunity.com/sharedfiles/filedetails/2714850307) | Não informada | Só inspiração. |
 
