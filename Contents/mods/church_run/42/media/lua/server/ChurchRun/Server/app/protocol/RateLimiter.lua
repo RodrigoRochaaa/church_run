@@ -1,18 +1,11 @@
 -- Balde de fichas por jogador e por comando (SPEC-001 R7 e R14). O tempo vem de fora (relógio
 -- real, em ms), para o teste controlar.
+local Tables = require "ChurchRun/util/Tables"
+
 local RateLimiter = {}
 RateLimiter.__index = RateLimiter
 
 local MS_PER_SECOND = 1000
-
--- O Kahlua do B42 não tem next (CLAUDE.md §6.2), então a tabela vazia é conferida com pairs. O laço
--- sai de propósito na primeira chave; daí o ignore do aviso 512 (laço que roda no máximo uma vez).
-local function isEmpty(tbl)
-    for _ in pairs(tbl) do -- luacheck: ignore 512
-        return false
-    end
-    return true
-end
 
 function RateLimiter.new()
     return setmetatable({ buckets = {} }, RateLimiter)
@@ -59,7 +52,7 @@ function RateLimiter:sweep(now)
         for _, command in ipairs(fullBuckets) do
             userBuckets[command] = nil
         end
-        if isEmpty(userBuckets) then
+        if Tables.isEmpty(userBuckets) then
             emptyUsers[#emptyUsers + 1] = user
         end
     end

@@ -78,4 +78,20 @@ function Fakes.player(username)
     return { username = username }
 end
 
+-- Como a Global ModData: open devolve sempre a mesma tabela viva da chave, criada vazia na primeira vez.
+function Fakes.storage(tables)
+    local storage = { tables = tables or {} }
+
+    function storage.open(key)
+        local data = storage.tables[key]
+        if data == nil then
+            data = {}
+            storage.tables[key] = data
+        end
+        return data
+    end
+
+    return storage
+end
+
 return Fakes

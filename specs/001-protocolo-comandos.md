@@ -20,7 +20,7 @@ Cliente e servidor precisam de um canal único e seguro para pedidos e respostas
 ## Comportamento
 
 - **R1. Canal único.** Todo pedido do mod usa `sendClientCommand(player, "ChurchRun", comando, args)`. Toda resposta usa `sendServerCommand(player, "ChurchRun", comando, args)` (um jogador) ou `sendServerCommand("ChurchRun", comando, args)` (todos). Mensagens de outros módulos são de outros mods ou do jogo: o roteador as ignora sem log.
-- **R2. Catálogo.** Todo comando está em `shared/ChurchRun/protocol/commands.lua`, com nome (`camelCase`, até 32 caracteres), direção (`toServer` ou `toClient`) e esquema dos argumentos. Todo comando `toServer` declara também o rate limit (R7). Comando fora do catálogo não existe.
+- **R2. Catálogo.** Todo comando está em `shared/ChurchRun/protocol/commands.lua`, com nome (`camelCase`, até 32 caracteres), direção (`toServer` ou `toClient`) e esquema dos argumentos. Todo comando `toServer` declara também o rate limit (R7). Comando fora do catálogo não existe. A SPEC-002 acrescenta o campo opcional `requiresData` (padrão `true`; o `ping` usa `false`).
 - **R3. Esquema.** Cada campo declara tipo e limites:
   - `string`: `maxLen` obrigatório (até 256), `minLen` opcional;
   - `integer`: `min` e `max` obrigatórios; recusa fração, NaN e infinito;

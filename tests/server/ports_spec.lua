@@ -7,6 +7,7 @@ describe("Ports (CLAUDE.md §3.1)", function()
         assert.is_true(Ports.check("Log", Fakes.log()))
         assert.is_true(Ports.check("Net", Fakes.net()))
         assert.is_true(Ports.check("Players", Fakes.players()))
+        assert.is_true(Ports.check("Storage", Fakes.storage()))
     end)
 
     it("acusa a função que falta", function()

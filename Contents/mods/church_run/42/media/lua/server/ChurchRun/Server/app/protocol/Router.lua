@@ -14,8 +14,12 @@ Router.__index = Router
 Router.SWEEP_INTERVAL_MS = 60000
 Router.UNKNOWN_USER = "?"
 
--- deps: clock, log, net e players (ports), handlers (comando → função(ctx, args)) e catalog
--- (opcional; por padrão, o catálogo do mod).
+local function alwaysReady()
+    return true
+end
+
+-- deps: clock, log, net e players (ports), handlers (comando → função(ctx, args)), dataReady
+-- (função que diz se a persistência carregou; SPEC-002 R6) e catalog (opcional; por padrão, o do mod).
 function Router.new(deps)
     local self = setmetatable({}, Router)
     self.catalog = deps.catalog or Commands.catalog
@@ -24,6 +28,7 @@ function Router.new(deps)
     self.log = deps.log
     self.net = deps.net
     self.players = deps.players
+    self.dataReady = deps.dataReady or alwaysReady
     self.limiter = RateLimiter.new()
     self.refusals = RefusalLog.new(deps.log)
     self.nextSweepMs = 0
@@ -66,6 +71,29 @@ function Router:dispatch(player, user, command, args)
     end
 end
 
+-- Passos 4 e 5 do R4 e a trava da persistência (SPEC-002 R6), para um comando que já existe e passou
+-- no rate limit. Devolve true se o pedido pode seguir para o handler.
+function Router:accept(player, user, command, def, args, now)
+    if not isCurrentVersion(args) then
+        self.refusals:record(user, now, "versionMismatch", { command = command })
+        self.net.sendToPlayer(player, Commands.VERSION_MISMATCH, { serverVersion = Version.PROTOCOL_VERSION })
+        return false
+    end
+    local valid, err = Schemas.validate(def.schema, args, Commands.VERSION_FIELD)
+    if not valid then
+        local field = Text.sanitize(err.field, Commands.MAX_NAME_LEN)
+        self.refusals:record(user, now, "invalidArgs", { command = command, field = field, problem = err.problem })
+        self:reject(player, command, Commands.REASON_INVALID_ARGS, field)
+        return false
+    end
+    if def.requiresData ~= false and not self.dataReady() then
+        self.refusals:record(user, now, "serverDataUnavailable", { command = command })
+        self:reject(player, command, Commands.REASON_SERVER_DATA_UNAVAILABLE)
+        return false
+    end
+    return true
+end
+
 function Router:handle(module, command, player, args)
     if module ~= Commands.MODULE then
         return
@@ -83,19 +111,9 @@ function Router:handle(module, command, player, args)
         self.refusals:record(user, now, "rateLimited", { command = command })
         return
     end
-    if not isCurrentVersion(args) then
-        self.refusals:record(user, now, "versionMismatch", { command = command })
-        self.net.sendToPlayer(player, Commands.VERSION_MISMATCH, { serverVersion = Version.PROTOCOL_VERSION })
-        return
+    if self:accept(player, user, command, def, args, now) then
+        self:dispatch(player, user, command, args)
     end
-    local valid, err = Schemas.validate(def.schema, args, Commands.VERSION_FIELD)
-    if not valid then
-        local field = Text.sanitize(err.field, Commands.MAX_NAME_LEN)
-        self.refusals:record(user, now, "invalidArgs", { command = command, field = field, problem = err.problem })
-        self:reject(player, command, Commands.REASON_INVALID_ARGS, field)
-        return
-    end
-    self:dispatch(player, user, command, args)
 end
 
 return Router

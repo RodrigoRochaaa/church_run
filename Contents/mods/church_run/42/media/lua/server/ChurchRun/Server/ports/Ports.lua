@@ -7,19 +7,20 @@ Ports.contracts = {
     Log = { "info", "warn", "error", "audit" },
     Net = { "sendToPlayer", "sendToAll" },
     Players = { "username" },
+    Storage = { "open" },
 }
 
 function Ports.check(name, impl)
     local contract = Ports.contracts[name]
     if contract == nil then
-        return false, "port desconhecido: " .. tostring(name)
+        return false, "unknown port: " .. tostring(name)
     end
     if type(impl) ~= "table" then
-        return false, name .. ": implementação ausente"
+        return false, name .. ": missing implementation"
     end
     for _, fn in ipairs(contract) do
         if type(impl[fn]) ~= "function" then
-            return false, name .. "." .. fn .. " não implementado"
+            return false, name .. "." .. fn .. " not implemented"
         end
     end
     return true
