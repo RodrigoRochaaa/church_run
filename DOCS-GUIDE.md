@@ -11,6 +11,7 @@
 | `JOURNAL.md` | "Onde a última sessão parou?" | Quem encerra a sessão | **Toda** sessão | **Sobrescrito** e commitado |
 | `DEPENDENCIES.md` | "O que eu instalo para trabalhar?" | Quem adiciona ou troca uma ferramenta | Ferramenta nova, versão do jogo nova | Editado |
 | `DOCS-GUIDE.md` | "Onde fica cada coisa?" | Quem cria um tipo novo de documento | Raro | Editado |
+| `README.md` | "O que é isto e por onde começo?" (quem chega pelo GitHub) | Quem muda a fase, a licença ou o status do projeto | Raro | Editado; só aponta para os outros arquivos |
 | `CHANGELOG.md` | "O que mudou para o jogador em cada versão?" | Todo PR com efeito visível | A cada PR | Só acréscimo, versão mais nova no topo |
 | `specs/README.md` | "Quais specs existem e em que status?" | Quem cria ou muda o status de uma spec | A cada spec | Editado (índice) |
 | `specs/NNN-*.md` | "Como esta funcionalidade se comporta, exatamente?" | Quem implementa a funcionalidade | Antes do código e no mesmo PR que muda o comportamento | Editado; status `rascunho → aprovada → implementada → obsoleta` |
@@ -34,6 +35,9 @@ Por que sobrescrever e não acumular: um diário que cresce sem parar vira um ar
 ### `DEPENDENCIES.md`: o ambiente
 Lista do que instalar, com versão e link, separada em obrigatório e opcional, mais a configuração das ferramentas e o passo a passo para testar em multiplayer local.
 
+### `README.md`: a porta de entrada
+É a página que o GitHub mostra primeiro. Diz em uma frase o que é o mod, em que fase está, a licença e para qual arquivo ir. Não repete conteúdo: aponta para o `CONTEXT.md`, o `CLAUDE.md`, o `DEPENDENCIES.md` e as `specs/`.
+
 ### `CHANGELOG.md`: o que mudou
 Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/): seções `Adicionado`, `Alterado`, `Corrigido`, `Removido` por versão, com a versão mínima do jogo. Texto pensado para quem administra servidor, não para programador.
 
@@ -41,7 +45,7 @@ Formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/): seções `A
 Uma spec por funcionalidade, no formato do `CLAUDE.md` §2.1. A numeração segue o doc de viabilidade: `001–002` base, `010–011` igrejas e spawn, `020–022` cerco, `030` morte, `040–041` economia, `050–051` buffs, `060–061` interface, `070–072` especiais. Faixas com folga permitem inserir specs sem renumerar.
 
 ### `specs/decisions/`: as ADRs
-Curtas (contexto, decisão, consequências), numeradas e imutáveis. Já previstas: ADR-001 servidor autoritativo, ADR-002 progressão global, ADR-003 licença e dependências externas.
+Curtas (cabeçalho com status e data, depois contexto, decisão e consequências), numeradas e imutáveis. Existentes: ADR-001 servidor autoritativo, ADR-002 progressão global, ADR-003 licença e dependências externas, ADR-004 ID do mod e namespace.
 
 ## Como organizar
 

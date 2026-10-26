@@ -11,7 +11,8 @@ Um mod **multiplayer** para Project Zomboid **Build 42 (42.20+)** em que o grupo
 
 - 100% Lua + scripts de item. Sem Java.
 - O **servidor** decide tudo; o cliente só pede e mostra (ver `CLAUDE.md` §1 e §4).
-- Gratuito e de código aberto (licença proposta: MIT para código, CC BY 4.0 para arte, a confirmar na ADR-003).
+- Gratuito e de código aberto: MIT para o código e CC BY 4.0 para a arte ([ADR-003](specs/decisions/ADR-003-licenca.md)).
+- ID do mod `church_run`, namespace do código `ChurchRun` ([ADR-004](specs/decisions/ADR-004-id-e-namespace.md)).
 
 ## 2. Documentos de referência
 
@@ -35,7 +36,7 @@ O ciclo do jogo:
 5. Quando o tempo zera, a igreja é **conquistada**: recompensa paga uma vez por jogador vivo, ícone no mapa, novo spawn liberado e **escolha de buffs** (3 opções sorteadas, sem repetir).
 6. As moedas compram armas, remédios, barricadas e roupas nas **lojas** da igreja. O catálogo cresce a cada igreja.
 
-Ordem proposta das igrejas: Rosewood → Riverside → West Point → Muldraugh → Louisville (final). Progresso **global do servidor** (decidido em 26/10/2026, vira a ADR-002).
+Ordem proposta das igrejas: Rosewood → Riverside → West Point → Muldraugh → Louisville (final). Progresso **global do servidor** ([ADR-002](specs/decisions/ADR-002-progressao-global.md)).
 
 Funcionalidades, agrupadas por módulo:
 
@@ -70,37 +71,39 @@ cliente (ui, net)  ──pedido──▶  servidor: Router ─▶ app (casos de 
 É a estrutura do `CLAUDE.md` §3.2, com as subpastas por funcionalidade que o design da conquista de igrejas pede. **Toda pasta nova segue as camadas**: uma funcionalidade aparece em `domain/`, `app/` e `adapters/`, nunca numa pasta que mistura tudo.
 
 ```
-QuestMod/                                  # raiz do repositório = item do Workshop
-  CLAUDE.md  CONTEXT.md  DOCS-GUIDE.md  DEPENDENCIES.md  JOURNAL.md  CHANGELOG.md  LICENSE
-  workshop.txt  preview.png
-  .emmyrc.json  .luacheckrc  .stylua.toml  # configuração das ferramentas (ver DEPENDENCIES.md)
-  Contents/mods/QuestMod/
-    common/                                # texturas, ícones, poster
+church_run/                                # raiz do repositório = item do Workshop (a pasta local pode ter outro nome)
+  CLAUDE.md  CONTEXT.md  DOCS-GUIDE.md  DEPENDENCIES.md  JOURNAL.md  CHANGELOG.md  README.md  LICENSE
+  workshop.txt  preview.png                # só na publicação (Fase 7)
+  .luacheckrc  .stylua.toml  .emmyrc.example.json  .gitattributes  .gitignore   # ferramentas (ver DEPENDENCIES.md)
+  .github/workflows/ci.yml                 # lint e testes a cada push e PR
+  Contents/mods/church_run/
+    common/                                # texturas, ícones, poster (o B42 espera a pasta, mesmo vazia)
     42/
-      mod.info                             # id=QuestMod, versionMin=42.20
+      mod.info                             # id=church_run, versionMin=42.20.0
       media/
-        scripts/QuestMod_items.txt         # moeda, itens de missão
-        lua/shared/Translate/{EN,PTBR}/    # textos do jogador (VERIFICAR formato e nome da pasta PT-BR no B42.20)
-        lua/shared/QuestMod/
+        scripts/ChurchRun_items.txt        # moeda, itens do mod
+        lua/shared/Translate/{EN,PTBR}/    # textos do jogador em JSON (conferido no B42.21.0 em 26/10/2026)
+        lua/shared/ChurchRun/
           domain/   siege/ waves/ buffs/ economy/ churches/
           defs/     churches.lua waves.lua shops.lua buffs.lua
           protocol/ commands.lua schemas.lua version.lua
           util/
-        lua/client/QuestMod/
+        lua/client/ChurchRun/
           Main.lua
           net/                             # enviar pedidos, receber estado
           ui/       hud/ shop/ buffdraft/ map/
           adapters/                        # eventos de cliente, símbolos do mapa
-        lua/server/QuestMod/
+        lua/server/ChurchRun/
           Main.lua                         # liga ports a adapters
           app/      siege/ spawn/ death/ shop/ buffs/
+          ports/                           # contratos que o app usa (Storage, Clock, Log, Net, Players...)
           rewards/                         # um pagador por tipo (item, moeda, buff, unlock)
           adapters/ ZombieSpawner Teleport Traits Inventory Storage Net Log Players Clock
           migrations/
   specs/
     README.md  000-template.md  checklist-mp.md
-    001-protocolo-comandos.md ...
-    decisions/ ADR-001-servidor-autoritativo.md  ADR-002-progressao-global.md  ADR-003-licenca.md
+    001-protocolo-comandos.md  002-persistencia.md ...
+    decisions/ ADR-001-servidor-autoritativo.md  ADR-002-progressao-global.md  ADR-003-licenca.md  ADR-004-id-e-namespace.md
   tests/                                   # busted, Lua 5.1, ports falsos
   tools/                                   # lint, empacotar, checar "API do jogo fora de adapters/"
 ```
@@ -115,7 +118,7 @@ Cada fase só começa quando as decisões de design que ela usa (D1 a D6, no doc
 
 | Fase | Entrega | Specs / ADRs | Decisões antes | Pronto quando |
 |---|---|---|---|---|
-| **0. Fundação** | Repositório, ferramentas, esqueleto do mod, ping cliente↔servidor, protocolo e persistência | ADR-001/002/003, SPEC-001, 002 | Licença, nome do mod | Mod carrega nos dois lados; comando inválido recusado e logado; dados sobrevivem a reiniciar o servidor |
+| **0. Fundação** (em andamento) | Repositório, ferramentas, esqueleto do mod, ping cliente↔servidor, protocolo e persistência | ADR-001/002/003/004, SPEC-001, 002 | Licença, nome do mod (fechadas em 26/10/2026) | Mod carrega nos dois lados; comando inválido recusado e logado; dados sobrevivem a reiniciar o servidor |
 | **1. Igreja 1 jogável** | Dados da Igreja 1, spawn liberado, cerco com timer, ondas, morte com área de espera, HUD mínimo (onda e tempo) | SPEC-010, 011, 020, 021, 022, 030, parte da 060 | D1, D2, D6 | Dois jogadores conquistam Rosewood; vitória paga uma vez; spawn muda para a próxima cidade |
 | **2. Economia** | Moeda como item, drop no cerco, loja com 4 abas | SPEC-040, 041 | D3, D4 | Compra validada no servidor; clique duplo não cobra duas vezes |
 | **3. Buffs** | Sorteio de 3, posse por personagem, perda na morte | SPEC-050, 051 | D5 | Sorteio sem repetição nos dois clientes; buff some ao morrer |
@@ -128,6 +131,4 @@ O roteiro de 9 etapas do plano de arquitetura continua valendo para a Fase 0 (et
 
 ## 7. Questões em aberto
 
-- **Nome do mod.** O ID técnico ainda é `QuestMod`, de quando o projeto era um mod de missões. Trocar depois do primeiro release quebra saves e a linha `Mods=` dos servidores; trocar agora custa só um buscar-e-substituir. Recomendo decidir antes da Fase 0.
-- **Repositório.** Ainda não existe repositório Git; os arquivos estão na pasta do projeto. Criar o repositório no GitHub é o primeiro passo da Fase 0 (ver `DEPENDENCIES.md`).
-- Decisões D1 a D6 do doc de viabilidade: moeda fora do cerco, corpo do morto, 5 ou 4 igrejas, catálogo, lista de buffs, tabela de ondas.
+- Decisões D1 a D6 do doc de viabilidade: moeda fora do cerco, corpo do morto, 5 ou 4 igrejas, catálogo, lista de buffs, tabela de ondas. Da D2, só "progresso global ou por jogador" está fechada (ADR-002).

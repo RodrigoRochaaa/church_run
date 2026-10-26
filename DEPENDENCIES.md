@@ -13,11 +13,12 @@
 | 4 | **Conta no GitHub** | Hospedar o repositório aberto | https://github.com |
 | 5 | **Visual Studio Code** | Editor | https://code.visualstudio.com |
 | 6 | **Extensão EmmyLua** (`tangzx.emmylua`) | Autocompletar e checar tipos em Lua | Marketplace do VS Code |
-| 7 | **Umbrella** | Tipos da API do PZ (classes Java, eventos) para o autocompletar | https://github.com/PZ-Umbrella/Umbrella/releases/latest |
-| 8 | **WSL + Ubuntu** | Rodar Lua 5.1, testes e lint no Windows | `wsl --install` no PowerShell como administrador |
+| 7 | **Umbrella** | Tipos da API do PZ (classes Java, eventos) para o autocompletar e para conferir se uma função existe no B42. Use a tag igual à versão do jogo (ex.: `42.21.0`) | https://github.com/PZ-Umbrella/Umbrella/releases/latest |
+| 8 | **WSL + Ubuntu** | Rodar Lua 5.1, testes e lint no Windows. Até instalar, o CI do GitHub roda testes e lint (item 12) | `wsl --install` no PowerShell como administrador |
 | 9 | **Lua 5.1 + LuaRocks** | Mesma versão de Lua do jogo (Kahlua é Lua 5.1) | Dentro do Ubuntu, ver §3 |
 | 10 | **busted** | Testes unitários (`CLAUDE.md` §7) | `luarocks`, ver §3 |
 | 11 | **luacheck** | Lint: globais proibidas, variáveis não usadas, API do jogo fora de `adapters/` | `luarocks`, ver §3 |
+| 12 | **GitHub Actions** | Rodar `luacheck` e `busted` a cada push e PR, com a mesma receita do §3 | Já vem com o GitHub; configuração em `.github/workflows/ci.yml` |
 
 ## 2. Opcional (recomendado)
 
@@ -40,12 +41,14 @@ Não precisa: Java/JDK, descompilador, TileZed/WorldEd (não vamos editar mapa) 
 2. **Git.** Instale com as opções padrão e configure:
    ```bash
    git config --global user.name "Seu Nome"
-   git config --global user.email "seu-email-do-github"
-   git config --global core.autocrlf input
+   git config --global user.email "ID+usuario@users.noreply.github.com"
    ```
-3. **Repositório.** Crie o repositório vazio no GitHub (ex.: `QuestMod`, público) e clone numa pasta curta, como `C:\dev\QuestMod`.
-4. **VS Code + EmmyLua.** Instale e abra a pasta do repositório.
-5. **Umbrella.** Baixe a última release e descompacte em `C:\dev\Umbrella`. A configuração está no §4.
+   - O repositório é público, e o e-mail vai em cada commit. Use o e-mail noreply do GitHub (o ID numérico sai de `gh api user --jq .id`). Para valer só neste repositório, rode o mesmo comando sem `--global`, dentro da pasta.
+   - Fim de linha: não precisa configurar `core.autocrlf`. O `.gitattributes` do repositório força LF em qualquer sistema.
+   - Se `git clone` por HTTPS falhar no Windows com `unable to get local issuer certificate` (antivírus ou proxy inspecionando HTTPS), use o certificado do Windows: `git config --global http.sslBackend schannel`.
+3. **Repositório.** Clone numa pasta curta, como `C:\dev\church_run`: `gh repo clone RodrigoRochaaa/church_run C:\dev\church_run` (ou `git clone`). Qualquer pasta serve; o link do passo 8 aponta para ela.
+4. **VS Code + EmmyLua.** Instale e abra a pasta do repositório. O VS Code oferece as extensões recomendadas em `.vscode/extensions.json`.
+5. **Umbrella.** Baixe a release igual à versão do jogo e descompacte em `C:\dev\Umbrella`, ou clone a tag: `git clone --depth 1 --branch 42.21.0 https://github.com/PZ-Umbrella/Umbrella.git C:\dev\Umbrella`. A configuração está no §4.
 6. **WSL.** No PowerShell como administrador: `wsl --install`, reinicie e crie o usuário do Ubuntu.
 7. **Lua, testes e lint** (no terminal do Ubuntu):
    ```bash
@@ -58,44 +61,22 @@ Não precisa: Java/JDK, descompilador, TileZed/WorldEd (não vamos editar mapa) 
    No Linux nativo os comandos são os mesmos. No macOS: `brew install lua@5.1 luarocks` (VERIFICAR fórmula) e os mesmos `luarocks install`.
 8. **Ligar o repositório ao jogo** sem copiar arquivos. No Prompt de Comando (não PowerShell):
    ```bat
-   mklink /J "%USERPROFILE%\Zomboid\Workshop\QuestMod" "C:\dev\QuestMod"
+   mklink /J "%USERPROFILE%\Zomboid\Workshop\church_run" "C:\dev\church_run"
    ```
-   O mod aparece no menu Mods do jogo. Tudo que você salvar no VS Code o jogo lê ao reiniciar (Lua também com `/reloadlua`; scripts de item só reiniciando o jogo). No Linux: `ln -s ~/dev/QuestMod ~/Zomboid/Workshop/QuestMod`.
+   O mod aparece no menu Mods do jogo como "Church Run". Tudo que você salvar no VS Code o jogo lê ao reiniciar (Lua também com `/reloadlua`; scripts de item só reiniciando o jogo). No Linux: `ln -s ~/dev/church_run ~/Zomboid/Workshop/church_run`.
 
 ## 4. Arquivos de configuração (na raiz do repositório)
 
-`.emmyrc.json`: versão de Lua do jogo e tipos do Umbrella. Acrescentar a pasta `media/lua` do jogo deixa o editor achar também as funções Lua vanilla.
-```json
-{
-  "$schema": "https://raw.githubusercontent.com/EmmyLuaLs/emmylua-analyzer-rust/refs/heads/main/crates/emmylua_code_analysis/resources/schema.json",
-  "runtime": { "version": "Lua5.1" },
-  "workspace": {
-    "library": [
-      "C:/dev/Umbrella/library",
-      "C:/Program Files (x86)/Steam/steamapps/common/ProjectZomboid/media/lua"
-    ]
-  }
-}
-```
-Caminhos são de cada máquina: cada pessoa ajusta o seu, e o arquivo pode ir para o `.gitignore` com um `.emmyrc.example.json` versionado.
+Os arquivos são a fonte da verdade; a tabela só diz para que cada um serve.
 
-`.luacheckrc`: Lua 5.1, único global `QuestMod`, e API do jogo permitida só em `adapters/` e nos `Main.lua` (é o lint do `CLAUDE.md` §3.4).
-```lua
-std = "lua51"
-globals = { "QuestMod" }
-max_line_length = 120
-exclude_files = { "tests/fixtures/**" }
-
-local PZ_API = { "Events", "ModData", "getPlayer", "sendClientCommand", "sendServerCommand",
-  "isClient", "isServer", "getOnlinePlayers", "getGameTime", "instanceItem", "getText",
-  "getScriptManager", "ISPanel", "ISButton", "ISCollapsableWindow", "getCore" }
-
-files["Contents/**/adapters/**"] = { read_globals = PZ_API }
-files["Contents/**/Main.lua"] = { read_globals = PZ_API }
-files["Contents/**/ui/**"] = { read_globals = PZ_API }   -- UI usa as classes ISUI do jogo
-files["tests/**"] = { std = "+busted" }
-```
-A lista `PZ_API` cresce conforme os adaptadores precisarem; um global que não está nela, fora dessas pastas, vira erro de lint.
+| Arquivo | O que faz |
+|---|---|
+| `.emmyrc.example.json` | Modelo do `.emmyrc.json` do EmmyLua: Lua 5.1, tipos do Umbrella e a pasta `media/lua` do jogo (para o editor achar também as funções Lua vanilla). Copie para `.emmyrc.json` e ajuste os caminhos da sua máquina; o `.emmyrc.json` fica fora do Git. A pasta do jogo depende da biblioteca Steam (ex.: `D:/SteamLibrary/steamapps/common/ProjectZomboid/media/lua`). |
+| `.luacheckrc` | Lint: Lua 5.1, único global `ChurchRun`, API do jogo só em `adapters/` e nos `Main.lua`, e em `ui/` só as classes de interface (o lint do `CLAUDE.md` §3.4). Um global fora das listas vira erro; as listas crescem conforme os adaptadores precisarem. |
+| `.stylua.toml` | Formatação do StyLua: 4 espaços, linhas de até 120 colunas, aspas duplas. |
+| `.gitattributes` | LF em todos os arquivos de texto, em qualquer sistema; imagens e sons como binário. |
+| `.vscode/extensions.json` | Extensões recomendadas: EmmyLua e StyLua. |
+| `.github/workflows/ci.yml` | CI: instala Lua 5.1, LuaRocks, busted e luacheck no Ubuntu (mesma receita do §3, passo 7) e roda `luacheck .` e `busted`, a cada push na `main` e em todo PR. |
 
 ## 5. Testar em multiplayer no mesmo PC
 
@@ -107,17 +88,17 @@ cd "C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid"
 start ProjectZomboid64.exe -nosteam -debug
 start ProjectZomboid64.exe -nosteam
 ```
-Na primeira janela, Hospedar → configurações → Mods → adicionar QuestMod → iniciar. Na segunda, Entrar com outro nome de usuário, IP e porta padrão. Atenção: no host o Lua de cliente e de servidor rodam juntos, então esse teste **não** substitui o B.
+O caminho acima é o da biblioteca Steam padrão; troque pelo da sua (Steam → Configurações → Armazenamento). Na primeira janela, Hospedar → configurações → Mods → adicionar Church Run → iniciar. Na segunda, Entrar com outro nome de usuário, IP e porta padrão. Atenção: no host o Lua de cliente e de servidor rodam juntos, então esse teste **não** substitui o B.
 
 **B. Real (servidor dedicado + 2 clientes)**: é o item 1 do checklist de MP.
 1. Rode `StartServer64.bat` (pasta do Dedicated Server) uma vez para gerar `%USERPROFILE%\Zomboid\Server\servertest.ini`.
-2. No `.ini`: `Mods=\QuestMod` (no B42 o ID leva `\` antes) e `WorkshopItems=` vazio, já que o mod é local. Reinicie o servidor.
+2. No `.ini`: `Mods=\church_run` (no B42 o ID leva `\` antes) e `WorkshopItems=` vazio, já que o mod é local. Reinicie o servidor.
 3. Abra dois clientes com `-nosteam` e entre em `127.0.0.1`, porta padrão.
-4. Logs: `%USERPROFILE%\Zomboid\console.txt` (cliente) e a janela/log do servidor. VERIFICAR se o servidor dedicado lê mods locais de `Zomboid\Workshop` ou só de `Zomboid\mods`; se for o segundo, crie outro link para `Contents\mods\QuestMod`.
+4. Logs: `%USERPROFILE%\Zomboid\console.txt` (cliente) e a janela/log do servidor. VERIFICAR se o servidor dedicado lê mods locais de `Zomboid\Workshop` ou só de `Zomboid\mods`; se for o segundo, crie outro link para `Contents\mods\church_run`.
 
 ## 6. Ordem recomendada
 
-1 → 2 → 3 (jogo, Git, repositório) → 4 → 5 (editor) → 8 (ligar ao jogo) → testar se o mod aparece → 6 → 7 (testes e lint, necessários a partir da primeira spec com código).
+1 → 2 → 3 (jogo, Git, repositório) → 4 → 5 (editor) → 8 (ligar ao jogo) → testar se o mod aparece → 6 → 7 (testes e lint locais, necessários a partir da primeira spec com código). Enquanto o 6 e o 7 não estiverem prontos, o CI do GitHub (item 12) roda testes e lint em cada push e PR.
 
 ## Fontes
 
