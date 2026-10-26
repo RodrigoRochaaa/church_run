@@ -1,0 +1,7 @@
+name=Church Run
+id=church_run
+description=Multiplayer church conquest for Build 42: survive timed zombie sieges, conquer each town's church and unlock new spawns. Work in progress, not playable yet.
+author=Rodrigo Rocha
+url=https://github.com/RodrigoRochaaa/church_run
+modversion=0.1.0
+versionMin=42.20.0

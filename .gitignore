@@ -1,0 +1,16 @@
+# Configuração local do EmmyLua (caminhos de cada máquina; o modelo é .emmyrc.example.json)
+.emmyrc.json
+
+# Editor: só as extensões recomendadas são versionadas
+.vscode/*
+!.vscode/extensions.json
+
+# Sistema operacional
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Saídas de ferramentas e pacotes gerados
+*.log
+luacov.*
+dist/

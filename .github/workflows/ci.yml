@@ -1,0 +1,36 @@
+# CI do church_run: lint e testes a cada push na main e em todo PR (CLAUDE.md §8).
+# Mesma receita do DEPENDENCIES.md §3, passo 7, para o resultado ser igual ao do WSL.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-e-testes:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Instalar Lua 5.1, LuaRocks, busted e luacheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.1 liblua5.1-0-dev luarocks
+          sudo luarocks --lua-version=5.1 install busted
+          sudo luarocks --lua-version=5.1 install luacheck
+          lua5.1 -v && busted --version && luacheck --version
+
+      - name: Lint (luacheck)
+        run: luacheck .
+
+      - name: Testes (busted)
+        run: |
+          if [ -d tests ]; then
+            busted
+          else
+            echo "Ainda não há testes: a pasta tests/ chega com a primeira spec com código."
+          fi

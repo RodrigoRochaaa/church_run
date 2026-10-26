@@ -1,0 +1,16 @@
+# LF em todos os arquivos de texto, em qualquer sistema (dispensa core.autocrlf).
+* text=auto eol=lf
+
+# Scripts do Windows precisam de CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binários: sem conversão de fim de linha nem diff de texto.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ogg binary
+*.wav binary
+*.fbx binary
+*.pack binary
+*.zip binary

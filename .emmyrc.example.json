@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/EmmyLuaLs/emmylua-analyzer-rust/refs/heads/main/crates/emmylua_code_analysis/resources/schema.json",
+  "runtime": { "version": "Lua5.1" },
+  "workspace": {
+    "library": [
+      "C:/dev/Umbrella/library",
+      "C:/Program Files (x86)/Steam/steamapps/common/ProjectZomboid/media/lua"
+    ]
+  }
+}
