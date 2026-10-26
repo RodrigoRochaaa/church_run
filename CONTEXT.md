@@ -70,7 +70,7 @@ church_run/                                # raiz do repositório = item do Work
   workshop.txt  preview.png                # só na publicação (Fase 7)
   .luacheckrc  .stylua.toml  .emmyrc.example.json  .gitattributes  .gitignore   # ferramentas (ver DEPENDENCIES.md)
   .github/workflows/ci.yml                 # lint e testes a cada push e PR
-  design/                                  # o "o quê": church_run_gdd.md, lojas.md, buffs.md
+  design/                                  # o "o quê": church_run_gdd.md, lojas.md, buffs.md, coleta-mapa.md
   research/                                # relatórios das provas técnicas: AAAA-MM-DD-nome.md (GUIA-CLAUDE.md §2)
   Contents/mods/church_run/
     common/                                # texturas, ícones, poster (o B42 espera a pasta, mesmo vazia)
@@ -115,11 +115,11 @@ Cada fase começa pelas provas técnicas dela (GDD §12) e só começa quando as
 | Fase | Entrega (passos do ROADMAP) | Decisões antes (GDD §14) | Pronto quando |
 |---|---|---|---|
 | **0. Fundação** (em andamento) | Repositório, ferramentas, esqueleto do mod, protocolo e persistência (P00 a P02) | Licença e nome do mod (fechadas em 26/10/2026) | Mod carrega nos dois lados; comando inválido recusado e logado; dados sobrevivem a reiniciar o servidor |
-| **1. Igreja 1 jogável** | Provas de teleporte, spawn e painel; dados de Rosewood; Kit do Peregrino com a relíquia; cerco, morte, nascimento e HUD mínimo (P03 a P11) | #1 cadeia de cidades, #5 corpo do morto | Dois jogadores conquistam Rosewood; vitória paga uma vez; spawn muda para a próxima cidade |
+| **1. Igreja 1 jogável** | Provas de teleporte, spawn e painel; dados de Rosewood; Kit do Peregrino com a relíquia; cerco, morte, nascimento e HUD mínimo (P03 a P11) | #5 corpo do morto (a #1, cadeia de cidades, foi decidida em 26/10/2026) | Dois jogadores conquistam Rosewood; vitória paga uma vez; spawn muda para a próxima cidade |
 | **2. Economia** | Atribuição do abate, moedas, Loja Básica e loja da igreja 1, conserto no altar (P12 a P15) | #2 carteira ou moeda física | Compra validada no servidor; clique duplo não cobra duas vezes |
 | **3. Buffs** | Sorteio de 3, reroll, posse por personagem, perda na morte (P16, P17) | #8 os 30 buffs | Sorteio sem repetição nos dois clientes; buff some ao morrer |
 | **4. Interface completa** | HUD completo e ícones no mapa (P18, P19) | — | Ícone aparece para quem entra depois da conquista |
-| **5. Igrejas 2 a 5** | Corredor e base dos especiais, dados das igrejas 2 a 5, teleporte, relíquia escondida (P20 a P24) | #1 cadeia, #3 teleporte, #4 descontos, #9 missões | Campanha completa jogável |
+| **5. Igrejas 2 a 5** | Corredor e base dos especiais, dados das igrejas 2 a 5, teleporte, relíquia escondida (P20 a P24) | #3 teleporte, #4 descontos, #9 missões | Campanha completa jogável |
 | **6. Zumbis especiais** | Especiais do GDD §5.3 e bandidos opcionais (P25 a P29) | #7 o Bispo | Cada especial estável em MP, ou descartado com registro no GDD §12 |
 | **7. Publicação** | Sandbox, traduções, poster, página da Oficina, checklist de MP (P30, P31) | — | Checklist de MP do `CLAUDE.md` §7 todo marcado |
 

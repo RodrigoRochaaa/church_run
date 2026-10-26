@@ -27,7 +27,7 @@ Meta: dois jogadores conquistam Rosewood num servidor dedicado.
 | P03 | Prova técnica: teleportar o jogador no MP sem o anti-cheat agir | P02 | GDD §2.2, §12 | pendente |
 | P04 | Prova técnica: gerar zumbis em pontos fixos a 40–60 tiles e mandá-los até a porta; medir o raio da área carregada | P02 | GDD §4.3, §12 | pendente |
 | P05 | Prova técnica: painel fixo à esquerda e símbolo no mapa | P02 | GDD §9, §12 | pendente |
-| P06 | Dados da igreja de Rosewood: altar, raio, 6 a 10 âncoras, ponto de nascimento (roteiro do Claude, coleta do Rodrigo no modo debug) | P00 | SPEC-010 | pendente |
+| P06 | Dados da igreja de Rosewood: altar, raio, 6 a 10 âncoras, ponto de nascimento (roteiro do Claude, coleta do Rodrigo no modo debug) | P00 | SPEC-010 | aguardando Rodrigo: SPEC-010 aprovada e roteiro em `design/coleta-mapa.md`; falta a coleta no jogo |
 | P06a | Kit do Peregrino: mochila básica com taco e 3 bandagens no personagem novo; enquanto Rosewood não for conquistada, a mochila traz a relíquia de Rosewood. As 30 moedas do kit entram com o P13 | P02 | SPEC-011 (kit no nascimento), SPEC-020 (altar com relíquia), GDD §11.1. VERIFICAR B42: item dado pelo servidor aparece no cliente sem sincronização extra | pendente |
 | P07 | Cerco: estados, votação, participantes, gerador de zumbis e ondas da igreja 1 | P04, P06, P06a | SPEC-020, 021, 022 | pendente |
 | P08 | Morte no cerco e sala de espera | P03, P07 | SPEC-030 | pendente |

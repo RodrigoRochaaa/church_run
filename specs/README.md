@@ -8,6 +8,7 @@ Uma spec por funcionalidade, no formato do `CLAUDE.md` §2.1 (modelo: [`000-temp
 |---|---|---|---|---|
 | [SPEC-001](001-protocolo-comandos.md) | Protocolo de comandos | aprovada | 0 | — |
 | [SPEC-002](002-persistencia.md) | Persistência | aprovada | 0 | — |
+| [SPEC-010](010-igrejas.md) | Igrejas e âncoras (dados) | aprovada | 1 | — |
 
 ## ADRs
 
