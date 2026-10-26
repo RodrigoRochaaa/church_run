@@ -72,7 +72,7 @@ Os arquivos são a fonte da verdade; a tabela só diz para que cada um serve.
 | Arquivo | O que faz |
 |---|---|
 | `.emmyrc.example.json` | Modelo do `.emmyrc.json` do EmmyLua: Lua 5.1, tipos do Umbrella e a pasta `media/lua` do jogo (para o editor achar também as funções Lua vanilla). Copie para `.emmyrc.json` e ajuste os caminhos da sua máquina; o `.emmyrc.json` fica fora do Git. A pasta do jogo depende da biblioteca Steam (ex.: `D:/SteamLibrary/steamapps/common/ProjectZomboid/media/lua`). |
-| `.luacheckrc` | Lint: Lua 5.1, único global `ChurchRun`, API do jogo só em `adapters/` e nos `Main.lua`, e em `ui/` só as classes de interface (o lint do `CLAUDE.md` §3.4). Um global fora das listas vira erro; as listas crescem conforme os adaptadores precisarem. |
+| `.luacheckrc` | Lint: só as funções que o Kahlua do B42 tem (std `kahlua`; falta, por exemplo, `next`, `CLAUDE.md` §6.2), único global `ChurchRun`, API do jogo só em `adapters/` e nos `Main.lua`, e em `ui/` só as classes de interface (`CLAUDE.md` §3.4). Os testes usam Lua 5.1 completo. Um global fora das listas vira erro; as listas crescem conforme os adaptadores precisarem. |
 | `.stylua.toml` | Formatação do StyLua: 4 espaços, linhas de até 120 colunas, aspas duplas. |
 | `.busted` | Configuração do busted: procura os testes em `tests/` (arquivos `*_spec.lua`) e põe as três pastas de Lua do mod no `package.path`, como o `require` do jogo (ADR-005). Os ports falsos ficam em `tests/fakes/`. |
 | `.gitattributes` | LF em todos os arquivos de texto, em qualquer sistema; imagens e sons como binário. |
