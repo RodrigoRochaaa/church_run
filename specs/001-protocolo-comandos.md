@@ -65,9 +65,9 @@ Novos motivos de `rejected` entram pela spec que os usa (ex.: SPEC-002 acrescent
 
 ### Textos para o jogador
 
-| Chave | Arquivo | EN | PT-BR |
+| Chave | Arquivo | EN | PT-BR e PT |
 |---|---|---|---|
-| `UI_ChurchRun_VersionMismatch` | `shared/Translate/EN/UI.json` e `PTBR/UI.json` | "Church Run: this server uses protocol version %1 and your mod uses %2. Update the mod and restart the game." | "Church Run: este servidor usa a versão %1 do protocolo e o seu mod usa a %2. Atualize o mod e reinicie o jogo." |
+| `UI_ChurchRun_VersionMismatch` | `shared/Translate/EN/UI.json`, `PTBR/UI.json` e `PT/UI.json` | "Church Run: this server uses protocol version %1 and your mod uses %2. Update the mod and restart the game." | "Church Run: este servidor usa a versão %1 do protocolo e o seu mod usa a %2. Atualize o mod e reinicie o jogo." |
 
 ### Log
 
